@@ -2,61 +2,23 @@
 #define PROTOCOL_H
 
 #include <vector>
-#include "strategy.h"
+#include "enviroment.h"
 #include "player.h"
 
 class Protocol
 {
 public:
-    //德州扑克基本术语
-    typedef enum
-    {
-        button = 0,         //庄家
-        blind = 1,          //盲注
-        small_blind = 2,    //小盲注
-        big_blind = 3,      //大盲注
-        jetton = 4,         //筹码
-        money = 5,          //金币
-        bet = 6,            //赌注
-        color = 7,          //花色
-        point = 8           //点数
-    } basic_term;
-
-    //打牌者行为
-    typedef enum
-    {
-        check = 9,          //让牌
-        call = 10,           //跟注
-        raise = 11,          //加注
-        all_in = 12,         //全押
-        fold = 13           //弃牌
-    } player_action;
-
-    //成牌类型
-    typedef enum
-    {
-        HIGH_CARD = 18,      //高牌
-        ONE_PAIR = 19,       //一对
-        TWO_PAIR = 20,       //两对
-        THREE_OF_A_KIND = 21,//三条
-        STRAIGHT = 22,       //顺子
-        FLUSH = 23,          //同花
-        FULL_HOUSE = 24,     //葫芦
-        FOUR_OF_A_KIND = 25, //四条
-        STRAIGHT_FLUSH = 26  //同花顺
-    } card_result;
-
-    //牌花色类型
-    typedef enum
-    {
-        SPADES = 14,         //黑桃
-        HEARTS = 15,         //红桃
-        CLUBS = 16,          //梅花
-        DIAMONDS = 17       //方片
-    } card_color;
-
-public:
+    /*初始化客户端参数*/
     Protocol();
+    Protocol(const char *serverIP, int serverPT, const char *myIP, int myPT, int pid);
+    /*功能：
+        启动客户端，与服务器建立连接
+      参数：
+        空
+      返回值：
+          返回建立连接的套接字，否则-1
+      */
+    int startClient();
     /*功能：
         玩家向服务器注册消息
       参数：
@@ -168,6 +130,13 @@ public:
           处理成功返回true，否则返回false
       */
     bool stop_pot_win_msg(Player &player, Win_allocation &winAllocation);
+
+private:
+    char *_serverIP;
+    int _serverPT;
+    char *_myIP;
+    int _myPT;
+    int _pid;
 };
 
 #endif // PROTOCOL_H
