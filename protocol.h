@@ -3,7 +3,8 @@
 
 #include <vector>
 #include "enviroment.h"
-#include "player.h"
+
+class Player;//声明此类，头文件相互包含的处理
 
 class Protocol
 {
@@ -30,7 +31,7 @@ public:
       返回值：
           注册成功则返回true，否则返回false
       */
-    bool ptos_reg_msg(int pid,char *pname);
+    bool ptos_reg_msg(char *pname);
 
     /*功能：
         服务器向玩家发送座位消息，将座次记录
@@ -72,7 +73,7 @@ public:
         服务器向玩家发询问消息，一方面记录他人下注，另一方面，要向服务器发出“我”的动作
       参数：
          playerBet：代表其他人此次的下注情况
-         player:代表玩家，通知玩家需要决策如何动作
+
       返回值：
           处理成功返回true，否则返回false
       */
@@ -140,6 +141,9 @@ private:
     int _myPT;
     int _pid;
     int sock_fd;
+    //消息接受与发送缓存
+    char bufRecv[500];
+    char bufSend[100];
 };
 
 #endif // PROTOCOL_H

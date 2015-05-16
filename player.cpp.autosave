@@ -14,3 +14,13 @@ Player::~Player()
     delete pro;
     delete stg;
 }
+
+void Player::start_Protocol()
+{
+    //创建此线程
+    if (pthread_create(&thread, 0, start_routine_c, (void*)&common_information)) {
+        /* handle exception */
+        perror("Pthread_create() error");
+        exit(-1);
+    }
+}

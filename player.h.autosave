@@ -12,6 +12,7 @@ public:
            const char* MyIp, int MyPt,
            int pid);
     ~Player();
+
     /*功能：
         启动策略计算器
       参数：
@@ -29,6 +30,18 @@ public:
         空
     */
     void start_Protocol();
+
+    void start_Strategy();
+
+    /*功能：
+        开始打牌
+      参数：
+
+      返回值：
+        空
+    */
+    void start_PlayCard();
+
 private:
 int my_money;   //我的金钱
 int my_jetton;  //我的筹码

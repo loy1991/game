@@ -5,7 +5,7 @@
 #include <sys/socket.h> //socket(),bind()
 #include <arpa/inet.h>  //Inet_pton(),htons()
 
-
+#include <stdio.h>      //sprintf()
 #include <stdlib.h>     //strcpy
 #include <strings.h>    //bzero()
 #include <iostream>
@@ -65,7 +65,13 @@ int Protocol::startClient()
     return sock_fd;
 }
 
-bool Protocol::ptos_reg_msg(int pid, char *pname)
+bool Protocol::ptos_reg_msg(char *pname)
 {
+    sprintf(bufSend,"reg: %d %s \n",_pid, pname);
+    cout << _pid << " " << pname << " " << (int)bufSend[19] << endl;
+    if((send(sock_fd, bufSend, strlen(bufSend)+1,0)) == -1){
+        cout << "Protocol::ptos_reg_msg() error!" << endl;
+        return(false);
+    }
     return true;
 }
