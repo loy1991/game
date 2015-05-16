@@ -11,6 +11,7 @@ public:
     /*初始化客户端参数*/
     Protocol();
     Protocol(const char *serverIP, int serverPT, const char *myIP, int myPT, int pid);
+
     /*功能：
         启动客户端，与服务器建立连接
       参数：
@@ -19,6 +20,7 @@ public:
           返回建立连接的套接字，否则-1
       */
     int startClient();
+
     /*功能：
         玩家向服务器注册消息
       参数：
@@ -28,7 +30,7 @@ public:
       返回值：
           注册成功则返回true，否则返回false
       */
-    bool ptos_reg_msg(int sock_fd,int pid,char *pname);
+    bool ptos_reg_msg(int pid,char *pname);
 
     /*功能：
         服务器向玩家发送座位消息，将座次记录
@@ -137,6 +139,7 @@ private:
     char *_myIP;
     int _myPT;
     int _pid;
+    int sock_fd;
 };
 
 #endif // PROTOCOL_H
