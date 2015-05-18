@@ -9,19 +9,46 @@ class Player;//声明此类，头文件相互包含的处理
 class Protocol
 {
 public:
+
     /*初始化客户端参数*/
     Protocol();
     Protocol(const char *serverIP, int serverPT, const char *myIP, int myPT, int pid);
 
     /*功能：
-        启动客户端，与服务器建立连接
+        启动客户端，与服务器建立TCP连接
       参数：
         空
       返回值：
           返回建立连接的套接字，否则-1
       */
-    int startClient();
+    int startTcp();
 
+    /*功能：
+        启动广播套接字
+      参数：
+        空
+      返回值：
+          返回建立连接的套接字，否则-1
+      */
+    int startBroadCast();
+
+    /*功能：
+        将协议与player连系起来
+      参数：
+        ply
+      返回值：
+        空
+      */
+    void connect_with(Player *ply);
+
+    /*功能：
+        开始处理消息
+      参数：
+        name：注册的pname
+      返回值：
+        空
+      */
+    void process_Msg(char *name);
     /*功能：
         玩家向服务器注册消息
       参数：
@@ -48,7 +75,7 @@ public:
       返回值：
           游戏结束则返回true，否则返回false
       */
-    bool stop_game_over_msg(void);
+    bool stop_game_over_msg(void *);
 
     /*功能：
         服务器向玩家发盲注消息，只处理与本玩家ID有关的信息
@@ -58,7 +85,7 @@ public:
           处理成功返回true，否则返回false
       */
 
-    bool stop_blind_msg(Player &player);
+    bool stop_blind_msg();
 
     /*功能：
         服务器向玩家发手牌消息
@@ -77,7 +104,7 @@ public:
       返回值：
           处理成功返回true，否则返回false
       */
-    bool stop_inquire_msg(Player_bet &playerBet,Player &player);
+    bool stop_inquire_msg(Player_bet &playerBet);
 
     /*功能：
         玩家向服务器发送行动消息
@@ -86,7 +113,7 @@ public:
       返回值：
           执行成功则返回true，否则返回false
       */
-    bool ptos_action_msg(int sock_fd, Player &player);
+    bool ptos_action_msg(int sock_fd);
 
     /*功能：
         服务器向玩家发公牌消息
@@ -132,15 +159,25 @@ public:
       返回值：
           处理成功返回true，否则返回false
       */
-    bool stop_pot_win_msg(Player &player, Win_allocation &winAllocation);
+    bool stop_pot_win_msg(Win_allocation &winAllocation);
 
 private:
+    Player *player; //代表玩家“我”
+
+    //需要用户输入的注册信息
     char *_serverIP;
     int _serverPT;
     char *_myIP;
     int _myPT;
     int _pid;
+
+    //通信的套接字
     int sock_fd;
+    int broadcast_fd;
+
+    //游戏结束标记
+    bool gameStop;
+
     //消息接受与发送缓存
     char bufRecv[500];
     char bufSend[100];

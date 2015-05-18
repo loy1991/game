@@ -47,6 +47,21 @@ enum card_color
     CLUBS = 16,          //梅花
     DIAMONDS = 17       //方片
 };
+enum game_state
+{
+    REG_MSG = 18,
+    SEAT_INFO_MSG = 19,
+    GAME_OVER_MSG = 20,
+    BLIND_MSG = 21,
+    HOLD_CARDS_MSG = 22,
+    INQUIRE_MSG = 23,
+    ACTION_MSG = 24,
+    FLOP_MSG = 25,
+    TURN_MSG = 26,
+    RIVER_MSG = 27,
+    SHOWDOWN_MSG = 28,
+    POT_WIN_MSG = 29
+};
 
 /*座次信息类
 0：为庄家
@@ -77,8 +92,8 @@ private:
     int pid[8];                         //玩家ID
     int money[8];                       //玩家金币
     int bet[8];                         //玩家赌注
-    player_action action[8];  //玩家的动作
-    int totl_pot;                    //奖池数额
+    player_action action[8];            //玩家的动作
+    int totl_pot;                       //奖池数额
 };
 
 /*公有牌*/
@@ -94,7 +109,7 @@ class Showdown_result
 {
 private:
     int pid[8];                         //玩家ID
-    card_result nut_hand[8];  //玩家结果牌型
+    card_result nut_hand[8];            //玩家结果牌型
 };
 
 /*彩池金额分配*/
