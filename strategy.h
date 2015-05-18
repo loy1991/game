@@ -55,6 +55,17 @@ protected:
     float straight_flush_chance();
     bool is_straight_flush();
 
+private:
+    /*功能：
+          返回数组中最大的连续牌个数;值返回连续开始的位置
+      参数：
+        arry:待检查的数组
+        index：值返回，返回最大连续牌的开始位置
+        len：数组长度
+      返回值：
+          返回成牌的情况
+    */
+    int max_succession(const char *arry, int len, int &index) const;
 
 private:
 
@@ -66,7 +77,7 @@ private:
     Seat_info seatInfo;
 
     //为计算"成牌"方便,设置牌型数组,做记号
-    int card_state[4][13];//card array
+    unsigned int card_state[4][13];//card array
 
 };
 

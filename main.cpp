@@ -1,6 +1,6 @@
 #include "protocol.h"
 #include "player.h"
-
+#include "enviroment.h"
 #include <stdlib.h>
 
 #include <iostream>
@@ -18,7 +18,9 @@ int main(int argc, char* argv[])
 
     Player p(argv[1], atoi(argv[2]), argv[3],atoi(argv[4]), atoi(argv[5]));
     p.start_PlayCard();
-    cout << "Hello World!" << endl;
+
+    unsigned int s = THREE;
+    cout << s << endl;
     return 0;
 
 }
