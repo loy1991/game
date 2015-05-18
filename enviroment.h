@@ -102,6 +102,7 @@ class Public_cards
 private:
     unsigned char color[5];     //花色
     unsigned char point[5];     //点数
+    int card_num;               //代表收到的卡牌数
 };
 
 /*摊牌结果*/

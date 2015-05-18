@@ -62,9 +62,11 @@ void* protocol(void *arg)
     p->pro->startTcp();
     p->pro->startBroadCast();
     p->pro->process_Msg(p->_name);
+    return NULL;
 }
 void* strategy(void *arg)
 {
-
+    Strategy *p = (Strategy *)arg;
+    return NULL;
 }
 
