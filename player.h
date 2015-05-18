@@ -50,19 +50,20 @@ friend void* strategy(void *arg);
     void start_PlayCard();
 
 private:
-int my_money;   //我的金钱
-int my_jetton;  //我的筹码
-player_action lPAction;   //上家的行动
-player_action myAction;   //我的行动
+    /*我的资产情况*/
+    int my_money;   //我的金钱
+    int my_jetton;  //我的筹码
 
-Protocol *pro;   //代表协议通信
-Strategy *stg;   //代表策略
+    player_action lPAction;   //上家的行动
+    player_action myAction;   //我的行动
 
-char *_name;    //代表玩家名pname
-pthread_t thread_pro;
-pthread_t thread_stg;
+    Protocol *pro;   //代表协议通信
+    Strategy *stg;   //代表策略
+
+    char *_name;    //代表玩家名pname
+    pthread_t thread_pro;
+    pthread_t thread_stg;
 
 };
 
-/*我的资产情况*/
 #endif // PLAYER_H

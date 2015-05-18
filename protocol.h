@@ -181,6 +181,7 @@ private:
     //消息接受与发送缓存
     char bufRecv[500];
     char bufSend[100];
+
 };
 
 #endif // PROTOCOL_H

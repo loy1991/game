@@ -47,6 +47,7 @@ enum card_color
     CLUBS = 16,          //梅花
     DIAMONDS = 17       //方片
 };
+
 enum game_state
 {
     REG_MSG = 18,
@@ -61,6 +62,23 @@ enum game_state
     RIVER_MSG = 27,
     SHOWDOWN_MSG = 28,
     POT_WIN_MSG = 29
+};
+
+enum card_point
+{
+    TWO = 31,
+    THREE = 32,
+    FOUR = 33,
+    FIVE = 34,
+    SIX = 35,
+    SEVEN = 36,
+    EIGHT = 37,
+    NINE = 38,
+    TEN = 39,
+    J = 40,
+    Q = 41,
+    K = 42,
+    A = 43
 };
 
 /*座次信息类
@@ -81,8 +99,8 @@ private:
 class Hold_cards
 {
 private:
-    unsigned char color[2];     //牌的花色
-    unsigned char point[2];     //牌的点数
+    card_color color[2];        //牌的花色
+    card_point point[2];        //牌的点数
 };
 
 /*玩家下注状态类*/
@@ -99,10 +117,22 @@ private:
 /*公有牌*/
 class Public_cards
 {
+public:
+    //构造函数
+    Public_cards();
+    //添加卡牌,可能与get_card_num()有竞争发生
+    void add_one_card(card_color color,card_point point);
+    //获取所有卡牌花色
+    const card_color* get_colors();
+    //获取所有卡牌点数
+    const card_point* get_points();
+    //获取当前公共牌到数量
+    int get_card_num();
+
 private:
-    unsigned char color[5];     //花色
-    unsigned char point[5];     //点数
-    int card_num;               //代表收到的卡牌数
+    card_color _color[5];        //花色
+    card_point _point[5];        //点数
+    int _card_num;               //代表收到的卡牌数
 };
 
 /*摊牌结果*/
@@ -119,6 +149,7 @@ class Win_allocation
 private:
     int pid[8];         //玩家ID
     int win_num[8];     //玩家赢取的奖金数额
+
 };
 
 #endif // ENVIROMENT_H
