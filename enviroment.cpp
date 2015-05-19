@@ -5,8 +5,8 @@
 /*==============公有牌==============*/
 Public_cards::Public_cards()
 {
-    bzero(_point, 5);
-    bzero(_color, 5);
+    bzero(_point, sizeof(_point));
+    bzero(_color, sizeof(_color));
     _card_num = 0;
 }
 

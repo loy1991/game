@@ -25,35 +25,35 @@ protected:
 
     //一对概率
     float one_pair_chance();
-    bool is_one_pair();
+    bool is_one_pair() const;
 
     //两对概率
     float two_pair_chance();
-    bool is_two_pair();
+    bool is_two_pair() const;
 
     //三条概率
     float three_of_a_kind_chance();
-    bool is_three_of_a_kind();
+    bool is_three_of_a_kind() const;
 
     //顺子概率
     float straight_chance();
-    bool is_straight();
+    bool is_straight() const;
 
     //同花概率
     float flush_chance();
-    bool is_flush();
+    bool is_flush() const;
 
     //葫芦概率
     float full_house_chance();
-    bool is_full_house();
+    bool is_full_house() const;
 
     //四条概率
     float four_of_a_kind_chance();
-    bool is_four_of_a_kind();
+    bool is_four_of_a_kind() const;
 
     //同花顺概率
     float straight_flush_chance();
-    bool is_straight_flush();
+    bool is_straight_flush() const;
 
 private:
     /*功能：
@@ -65,7 +65,7 @@ private:
       返回值：
           返回成牌的情况
     */
-    int max_succession(const char *arry, int len, int &index) const;
+    int max_succession(const unsigned int *arry, int len, int &index) const;
 
 private:
 
