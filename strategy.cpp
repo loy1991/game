@@ -109,7 +109,7 @@ int Strategy::max_succession(const char *arry, int len, int &index) const
 
     for(int i = 0; i < len;i++){
         temp = 0;
-        while(arry[i]){
+        while(arry[i] && i < len){
             temp++;
             i++;
         }
