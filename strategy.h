@@ -17,9 +17,12 @@ public:
           返回成牌的情况
     */
     card_result what_card_result();
+
+    //返回策略保存情报的单元
     Seat_info& get_seatInfo();
     Player_bet& get_playerBet();
     Hold_cards& get_holdCards();
+    Public_cards& get_publicCards();
 
 protected:
     //高牌概率
@@ -82,7 +85,6 @@ private:
     Player_bet playerBet;
     Hold_cards holdCards;
     Seat_info seatInfo;
-
     //为计算"成牌"方便,设置牌型数组,做记号
     unsigned int card_state[4][13];//card array
 

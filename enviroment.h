@@ -18,6 +18,7 @@ enum basic_term
 //打牌者行为
 enum player_action
 {
+    no_player_action = -1,//空动作
     check = 9,          //让牌
     call = 10,           //跟注
     raise = 11,          //加注
@@ -85,6 +86,8 @@ enum card_point
 card_point s2card_point(char*s);
 //从字符串到 card_color 转换
 card_color s2card_color(char*s);
+//从字符串到 player_action 转换
+player_action s2player_action(char*s);
 
 /*座次信息类
 0：为庄家
@@ -99,6 +102,8 @@ public:
     int get_pid(int index){return pid[index];}
     int get_jetton(int index){return jetton[index];}
     int get_money(int index){return money[index];}
+    //取得pid对应的index，不存在则返回-1
+    int get_index(int id);
 
     void set_pid(int index, int val){pid[index] = val; people_num++;}
     void set_jetton(int index, int val){jetton[index] = val;}
@@ -114,51 +119,59 @@ private:
 class Hold_cards
 {
 public:
-    card_color get_color(int index){return color[index];}
-    card_point get_point(int index){return point[index];}
+    card_color get_color(int index){return _color[index];}
+    card_point get_point(int index){return _point[index];}
 
-    void set_color(int index, card_color val){color[index] = val;}
-    void set_point(int index, card_point val){point[index] = val;}
+    void set_color(int index, card_color val){_color[index] = val;}
+    void set_point(int index, card_point val){_point[index] = val;}
 private:
-    card_color color[2];        //牌的花色
-    card_point point[2];        //牌的点数
+    card_color _color[2];        //牌的花色
+    card_point _point[2];        //牌的点数
 };
 
 /*玩家下注状态类*/
 class Player_bet
 {
 public:
-    Player_bet():totl_pot(0){}
+    Player_bet():totl_pot(0),player_count(0){}
 
     int get_pid(int index){return pid[index];}
     int get_bet(int index){return bet[index];}
-    player_action get_action(int index){return action[index];}
+    //取得pid对应的index，不存在则返回-1
+    int get_index(int id);
     int get_totl_pot(){return totl_pot;}
+    player_action get_action(int index){return action[index];}
 
-    void set_pid(int index, int val){pid[index] = val;}
-    void set_bet(int index, int val){bet[index] = val; totl_pot += val;}
+
+    void set_pid(int index, int val){pid[index] = val; player_count++;}
+    void set_bet(int index, int val){bet[index] = val;}
     void set_action(int index, player_action val){action[index] = val;}
+    void set_totl_pot(int val){totl_pot = val;}
 private:
     int pid[8];                         //玩家ID
     int bet[8];                         //玩家赌注
     player_action action[8];            //玩家的动作
+    int player_count;                   //指示当前的玩家数
     int totl_pot;                       //奖池数额
 };
 
 /*公有牌*/
 class Public_cards
 {
+//添加卡牌,可能与get_card_num()有竞争发生
 public:
     //构造函数
     Public_cards();
-    //添加卡牌,可能与get_card_num()有竞争发生
-    void add_one_card(card_color color,card_point point);
-    //获取所有卡牌花色
-    const card_color* get_colors();
-    //获取所有卡牌点数
-    const card_point* get_points();
-    //获取当前公共牌到数量
+
+    //获取当前公共牌到的数量
     int get_card_num();
+
+    card_color get_color(int index){return _color[index];}
+    card_point get_point(int index){return _point[index];}
+
+    void set_color(int index, card_color val){_color[index] = val;}
+    void set_point(int index, card_point val){_point[index] = val;}
+
 
 private:
     card_color _color[5];        //花色

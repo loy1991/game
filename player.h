@@ -40,21 +40,20 @@ friend void* strategy(void *arg);
     */
     void start_Protocol();
 
-    /*功能：
-        开始打牌
-      参数：
-
-      返回值：
-        空
-    */
+    //功能：开始打牌
     void start_PlayCard();
-
+    //获得player的策略实例
     Strategy *get_strategy();
+    //返回玩家的动作
+    player_action get_my_action();
+    //返回玩家准备加的注
+    int get_my_bet();
 
 private:
     /*我的资产情况*/
     int my_money;   //我的金钱
     int my_jetton;  //我的筹码
+    int my_bet;     //我的赌注
 
     player_action lPAction;   //上家的行动
     player_action myAction;   //我的行动

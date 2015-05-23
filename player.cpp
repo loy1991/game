@@ -64,6 +64,18 @@ Strategy *Player::get_strategy()
     return stg;
 }
 
+player_action Player::get_my_action()
+{
+    //返回经过策略计算的动作，此处测试，返回call
+    myAction = all_in;
+    return myAction;
+}
+
+int Player::get_my_bet()
+{
+    return my_bet;
+}
+
 void* protocol(void *arg)
 {
     Player *p = (Player *)arg;

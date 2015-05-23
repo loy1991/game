@@ -221,6 +221,11 @@ Hold_cards &Strategy::get_holdCards()
     return holdCards;
 }
 
+Public_cards &Strategy::get_publicCards()
+{
+    return publicCards;
+}
+
 int Strategy::max_succession(const unsigned int *arry, int len, int &index) const
 {
     int max_len = -1;

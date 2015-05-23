@@ -100,11 +100,11 @@ public:
     /*功能：
         玩家向服务器发送行动消息
       参数：
-          player：代表玩家“我”
+          action:代表玩家的动作
       返回值：
           执行成功则返回true，否则返回false
       */
-    bool ptos_action_msg(int sock_fd);
+    bool ptos_action_msg(Player *p);
 
     /*功能：
         服务器向玩家发公牌消息

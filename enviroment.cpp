@@ -15,23 +15,6 @@ Public_cards::Public_cards()
     _card_num = 0;
 }
 
-void Public_cards::add_one_card(card_color color, card_point point)
-{
-    _color[_card_num] = color;
-    _point[_card_num] = point;
-    _card_num++;
-}
-
-const card_color *Public_cards::get_colors()
-{
-    return _color;
-}
-
-const card_point *Public_cards::get_points()
-{
-    return _point;
-}
-
 int Public_cards::get_card_num()
 {
     return _card_num;
@@ -75,3 +58,40 @@ card_color s2card_color(char*s)
 //        return -1;
 //    }
 }
+
+/*==============从字符串到 player_action 转换==============*/
+player_action s2player_action(char*s)
+{
+    if(strcmp("check",s) == 0) return check;    //让牌
+    if(strcmp("call",s) == 0) return call;      //跟注
+    if(strcmp("raise",s) == 0) return raise;    //加注
+    if(strcmp("all_in",s) == 0) return all_in;  //全押
+    if(strcmp("fold",s) == 0) return fold;      //弃牌
+    else
+        return no_player_action;                //无动作
+}
+
+/*==============玩家下注状态类==============*/
+int Player_bet::get_index(int id)
+{
+    //设置策略中，“我”坐得位置
+    for(int i = 0; i < player_count; i++){
+        if(pid[i] == id){
+            return i;//给strategy设置“我”坐得位置
+        }
+    }
+    return -1;
+}
+
+/*==============座次信息类==============*/
+int Seat_info::get_index(int id)
+{
+    //设置策略中，“我”坐得位置
+    for(int i = 0; i < 8; i++){
+        if(pid[i] == id){
+            return i;//给strategy设置“我”坐得位置
+        }
+    }
+    return -1;
+}
+

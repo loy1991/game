@@ -114,22 +114,23 @@ void Protocol::process_Msg(char *name)
             if(strcmp("hold/ ",pline) == 0){
                 delete pline;
                 stop_hold_cards_msg(player);
-                for(int i = 0 ; i < 2; i++){
-                    cout << player->get_strategy()->get_holdCards().get_color(i)<<"\t";
-                    cout << player->get_strategy()->get_holdCards().get_point(i)<<endl;
-                }
             }
             //inquire-msg消息|发送action-msg
             if(strcmp("inquire/ ",pline) == 0){
                 delete pline;
                 //Player_bet
                 stop_inquire_msg(player);
+                ptos_action_msg(player);
             }
             //flop-msg公牌
             if(strcmp("flop/ ",pline) == 0){
                 delete pline;
                 //Public_cards
                 stop_flop_msg(player);
+                for(int i = 0; i< 3; i++){
+                    cout << player->get_strategy()->get_publicCards().get_color(i) << "\t";
+                    cout << player->get_strategy()->get_publicCards().get_point(i) << endl;
+                }
             }
             //turn-msg
             if(strcmp("turn/ ",pline) == 0){
@@ -282,32 +283,116 @@ bool Protocol::stop_hold_cards_msg(Player *p)
 bool Protocol::stop_inquire_msg(Player *p)
 {
     int index = 0;
-    char * pline = read_line_msg(index);
+    int count = 0;      //标记第几个人
+    char *word = NULL;  //记录单词
+    char * pline = NULL;//记录读取到的行
 
+    Player_bet *pb = &(p->get_strategy()->get_playerBet());
+    Seat_info *pi = &(p->get_strategy()->get_seatInfo());
 
-    delete pline;
+    while(pline = read_line_msg(index)){
+
+        if(strcmp("inquire/ ",pline) == 0)
+            continue;
+        if(strcmp("/inquire ",pline) == 0)
+            break;
+        if(strncmp("total pot: ", pline, 9) == 0){
+
+            word = strtok(pline,":");
+            word = strtok(NULL, " ");
+            pb->set_totl_pot(atoi(word));
+            continue;
+        }
+
+        //分词处理
+        word = strtok(pline," ");
+        while(word){
+            int temp_id = atoi(word);
+            pb->set_pid(count, temp_id);
+            word = strtok(NULL," ");
+
+            pi->set_jetton(pi->get_index(temp_id), atoi(word));
+            word = strtok(NULL," ");
+
+            pi->set_money(pi->get_index(temp_id),atoi(word));
+            word = strtok(NULL," ");
+
+            pb->set_bet(count, atoi(word));
+            word = strtok(NULL," ");
+
+            pb->set_action(count, s2player_action(word));
+            word = strtok(NULL," ");
+            count ++;
+        }
+        delete pline;
+    }
     return true;
 }
 
-bool Protocol::ptos_action_msg(int sock_fd)
-{
-    int index = 0;
-    char * pline = read_line_msg(index);
 
+bool Protocol::ptos_action_msg(Player *p)
+{        
+    player_action pl_act = no_player_action;
+    pl_act = p->get_my_action();
 
-    delete pline;
+    bzero(bufSend, sizeof(bufSend));//清空发送缓存
+
+    if( pl_act == call)//跟注
+        sprintf(bufSend,"%s \n", "call");
+
+    if( pl_act == check)//让牌
+        sprintf(bufSend,"%s \n", "check");
+
+    if( pl_act == fold)//弃牌
+        sprintf(bufSend,"%s \n", "fold");
+
+    if( pl_act == all_in)//全押
+        sprintf(bufSend,"%s \n", "all_in");
+
+    if( pl_act == raise)//加注
+        sprintf(bufSend,"%s %d \n", "call", p->get_my_bet());
+
+    if((send(sock_fd, bufSend, strlen(bufSend)+1,0)) == -1){
+        cout << "Protocol::ptos_action_msg() error!" << endl;
+        return(false);
+    }
     return true;
 }
+
 
 bool Protocol::stop_flop_msg(Player *p)
 {
     int index = 0;
-    char * pline = read_line_msg(index);
+    int count = 0;      //标记第张牌
+    char *word = NULL;  //记录单词
+    char * pline = NULL;//记录读取到的行
 
+    Public_cards *pc = &(p->get_strategy()->get_publicCards());
 
-    delete pline;
+    while(pline = read_line_msg(index)){
+
+        if(strcmp("flop/ ",pline) == 0)
+            continue;
+        if(strcmp("/flop ",pline) == 0)
+            break;
+
+        //分词处理
+        word = strtok(pline," ");
+        while(word){
+
+            pc->set_color(count, s2card_color(word));
+            word = strtok(NULL," ");
+
+            pc->set_point(count, s2card_point(word));
+            word = strtok(NULL," ");
+
+            count ++;
+        }
+        delete pline;
+    }
     return true;
 }
+
 
 bool Protocol::stop_turn_msg(Player *p)
 {
