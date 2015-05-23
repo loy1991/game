@@ -81,6 +81,11 @@ enum card_point
     A = 43
 };
 
+//从字符串到 card_point 转换
+card_point s2card_point(char*s);
+//从字符串到 card_color 转换
+card_color s2card_color(char*s);
+
 /*座次信息类
 0：为庄家
 1：小盲注
@@ -108,6 +113,12 @@ private:
 /*手牌类*/
 class Hold_cards
 {
+public:
+    card_color get_color(int index){return color[index];}
+    card_point get_point(int index){return point[index];}
+
+    void set_color(int index, card_color val){color[index] = val;}
+    void set_point(int index, card_point val){point[index] = val;}
 private:
     card_color color[2];        //牌的花色
     card_point point[2];        //牌的点数

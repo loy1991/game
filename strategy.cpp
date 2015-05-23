@@ -216,6 +216,11 @@ Player_bet &Strategy::get_playerBet()
     return playerBet;
 }
 
+Hold_cards &Strategy::get_holdCards()
+{
+    return holdCards;
+}
+
 int Strategy::max_succession(const unsigned int *arry, int len, int &index) const
 {
     int max_len = -1;

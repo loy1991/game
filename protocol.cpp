@@ -114,6 +114,10 @@ void Protocol::process_Msg(char *name)
             if(strcmp("hold/ ",pline) == 0){
                 delete pline;
                 stop_hold_cards_msg(player);
+                for(int i = 0 ; i < 2; i++){
+                    cout << player->get_strategy()->get_holdCards().get_color(i)<<"\t";
+                    cout << player->get_strategy()->get_holdCards().get_point(i)<<endl;
+                }
             }
             //inquire-msg消息|发送action-msg
             if(strcmp("inquire/ ",pline) == 0){
@@ -245,10 +249,33 @@ bool Protocol::stop_blind_msg(Player *p)
 bool Protocol::stop_hold_cards_msg(Player *p)
 {
     int index = 0;
-    char * pline = read_line_msg(index);
+    int count = 0;      //标记第几个人
+    char *word = NULL;  //记录单词
+    char * pline = NULL;//记录读取到的行
+    Hold_cards *ph = &(p->get_strategy()->get_holdCards());
 
+    while(pline = read_line_msg(index)){
 
-    delete pline;
+        if(strcmp("hold/ ",pline) == 0)
+            continue;
+        if(strcmp("/hold ",pline) == 0)
+            break;
+
+        //分词处理
+        word = strtok(pline," ");
+        while(word){
+
+            ph->set_color(count, s2card_color(word));
+            word = strtok(NULL," ");
+
+            ph->set_point(count, s2card_point(word));
+            word = strtok(NULL," ");
+
+            count ++;
+        }
+
+        delete pline;
+    }
     return true;
 }
 
