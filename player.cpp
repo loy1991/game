@@ -10,6 +10,7 @@ Player::Player(const char *SerIp, int SerPt, const char *MyIp, int MyPt, int pid
 {
     pro = new Protocol(SerIp, SerPt, MyIp, MyPt,pid);//生成协议处理
     stg = new Strategy();
+
     my_money = 0;   //我的金钱
     my_jetton = 0;  //我的筹码
 
@@ -43,6 +44,8 @@ void Player::start_Strategy()
 
 void Player::start_PlayCard()
 {
+    //将协议与player关联
+    pro->connect_with(this);
     //启动协议模块线程
     start_Protocol();
     //启动策略模块现场
@@ -56,11 +59,15 @@ void Player::start_PlayCard()
     pthread_join(thread_stg,0);
 }
 
+Strategy *Player::get_strategy()
+{
+    return stg;
+}
+
 void* protocol(void *arg)
 {
     Player *p = (Player *)arg;
     p->pro->startTcp();
-    p->pro->startBroadCast();
     p->pro->process_Msg(p->_name);
     return NULL;
 }

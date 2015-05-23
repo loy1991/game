@@ -17,6 +17,7 @@ public:
           返回成牌的情况
     */
     card_result what_card_result();
+    Seat_info& get_seatInfo();
 
 protected:
     //高牌概率
@@ -55,6 +56,9 @@ protected:
     float straight_flush_chance();
     bool is_straight_flush() const;
 
+
+
+
 private:
     /*功能：
           返回数组中最大的连续牌个数;值返回连续开始的位置
@@ -66,6 +70,7 @@ private:
           返回成牌的情况
     */
     int max_succession(const unsigned int *arry, int len, int &index) const;
+
 
 private:
 

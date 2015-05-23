@@ -24,15 +24,6 @@ public:
     int startTcp();
 
     /*功能：
-        启动广播套接字
-      参数：
-        空
-      返回值：
-          返回建立连接的套接字，否则-1
-      */
-    int startBroadCast();
-
-    /*功能：
         将协议与player连系起来
       参数：
         ply
@@ -161,6 +152,16 @@ public:
       */
     bool stop_pot_win_msg(Win_allocation &winAllocation);
 
+    /*功能：
+        从缓存中读取行，即遇到 \n
+      参数：
+         index:代表从缓存中的什么位置开始读取，初始化为0
+      返回值：
+          返回行字符串，使用后需要手动释放此内存
+      */
+private:
+    char *read_line_msg(int &index) const;
+
 private:
     Player *player; //代表玩家“我”
 
@@ -173,7 +174,6 @@ private:
 
     //通信的套接字
     int sock_fd;
-    int broadcast_fd;
 
     //游戏结束标记
     bool gameStop;

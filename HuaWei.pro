@@ -1,6 +1,7 @@
 TEMPLATE = app
 CONFIG += console
 CONFIG -= qt
+TARGET = ~/game/works/target/game
 
 CONFIG += c++11
 LIBS += -lpthread

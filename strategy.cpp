@@ -206,6 +206,11 @@ bool Strategy::is_straight_flush()const
     return false;
 }
 
+Seat_info &Strategy::get_seatInfo()
+{
+    return seatInfo;
+}
+
 int Strategy::max_succession(const unsigned int *arry, int len, int &index) const
 {
     int max_len = -1;

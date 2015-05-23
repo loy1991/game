@@ -49,6 +49,8 @@ friend void* strategy(void *arg);
     */
     void start_PlayCard();
 
+    Strategy *get_strategy();
+
 private:
     /*我的资产情况*/
     int my_money;   //我的金钱

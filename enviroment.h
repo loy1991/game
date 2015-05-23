@@ -89,6 +89,14 @@ enum card_point
 */
 class Seat_info
 {
+public:
+    int get_pid(int index){return pid[index];}
+    int get_jetton(int index){return jetton[index];}
+    int get_money(int index){return money[index];}
+
+    void set_pid(int index, int val){pid[index] = val;}
+    void set_jetton(int index, int val){jetton[index] = val;}
+    void set_money(int index, int val){money[index] = val;}
 private:
     int pid[8];         //玩家ID
     int jetton[8];      //筹码数

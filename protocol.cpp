@@ -9,6 +9,9 @@
 #include <stdio.h>      //sprintf()
 #include <stdlib.h>     //strcpy
 #include <strings.h>    //bzero()
+#include <string.h>     //strtok()
+#include <errno.h>      //strerro()
+#include <unistd.h>     //usleep()
 #include <iostream>
 using namespace std;
 
@@ -36,11 +39,13 @@ Protocol::Protocol(const char *serverIP, int serverPT, const char *myIP, int myP
 
 int Protocol::startTcp()
 {
+    const int on = 1;
     //打开本地套接字
     if ((sock_fd = socket(AF_INET, SOCK_STREAM, 0))== -1){
        cout << "socket() error!" << endl;
        return(-1);
     }
+    setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
 
     //绑定本地IP和端口
     struct sockaddr_in cliaddr;
@@ -61,36 +66,13 @@ int Protocol::startTcp()
     servaddr.sin_port = htons(_serverPT);//设定服务器端口
     inet_pton(AF_INET, _serverIP, &servaddr.sin_addr);//设定服务器IP
 
-    if((connect(sock_fd, (struct sockaddr *)&servaddr, sizeof(servaddr))) == -1){
-        cout << "connect() error!" << endl;
-        return(-1);
+    while((connect(sock_fd, (struct sockaddr *)&servaddr, sizeof(servaddr))) == -1){
+//        cout << "connect() error!" << endl;
+//        cout << strerror(errno) << endl;
+//        cout.flush();
+        usleep(5000);
     }
     return sock_fd;
-}
-
-int Protocol::startBroadCast()
-{
-    const int on = 1;
-    //打开广播套接字
-    if ((broadcast_fd = socket(AF_INET, SOCK_DGRAM, 0))== -1){
-       cout << "socket() error!" << endl;
-       return(-1);
-    }
-
-    //绑定本地IP和端口
-    struct sockaddr_in cliaddr;
-    bzero(&cliaddr, sizeof(cliaddr));
-    cliaddr.sin_family = AF_INET;  //设定客户端类型
-    cliaddr.sin_port = htons(6011);//设定客户端端口
-    if((bind(broadcast_fd, (struct sockaddr *)&cliaddr, sizeof(cliaddr))) == -1){
-        cout << "UDP-bind() error!" << endl;
-        return(-1);
-    }
-
-    //设定为接受广播消息
-    setsockopt(broadcast_fd, SOL_SOCKET, SO_BROADCAST, &on, sizeof(on));
-
-    return broadcast_fd;
 }
 
 void Protocol::connect_with(Player *ply)
@@ -104,14 +86,23 @@ void Protocol::process_Msg(char *name)
     int len = 0;
     while(gameStop == false)
     {
-        if ((len = recv(broadcast_fd, bufRecv, 500, 0)) != 0) {
+        if ((len = recv(sock_fd, bufRecv, 500, 0)) != 0) {
             bufRecv[len]='\0';
-            cout << bufRecv << strlen(bufRecv)<<endl;
+
+            //获取数据的首行
+            int index = 0;
+            char * pline = read_line_msg(index);
 
             //进入消息处理阶段
             //game_over消息
-            if(strcmp("game over",bufRecv) == 0){
+            if(strcmp("game-over ",pline) == 0){
+                delete pline;
                 stop_game_over_msg(0);
+            }
+            //seat_info消息
+            if(strcmp("seat/ ",pline) == 0){
+                delete pline;
+                stop_seat_info_msg(player->get_strategy()->get_seatInfo());
             }
 
         }
@@ -129,9 +120,158 @@ bool Protocol::ptos_reg_msg(char *pname)
     return true;
 }
 
+bool Protocol::stop_seat_info_msg(Seat_info &seat)
+{
+    int index = 0;
+    int count = 0;      //标记第几个人
+    char *word = NULL;  //记录单词
+    char * pline = NULL;//记录读取到的行
+
+    while(pline = read_line_msg(index)){
+
+        if(strcmp("seat/ ",pline) == 0)
+            continue;
+        if(strcmp("/seat ",pline) == 0)
+            break;
+
+        //分词处理
+        word = strtok(pline," ");
+        while(word){
+            if(strcmp("button:",word) == 0){word = strtok(NULL," \n"); continue;}
+            if(strcmp("small",word) == 0) {word = strtok(NULL," \n"); continue;}
+            if(strcmp("blind:",word) == 0) {word = strtok(NULL," \n"); continue;}
+            if(strcmp("big",word) == 0) {word = strtok(NULL," \n"); continue;}
+
+            seat.set_pid(count,atoi(word));
+            word = strtok(NULL," ");
+
+            seat.set_jetton(count, atoi(word));
+            word = strtok(NULL," ");
+
+            seat.set_money(count, atoi(word));
+            word = strtok(NULL," ");
+            count ++;
+        }
+        delete pline;
+    }
+    return true;
+}
+
 bool Protocol::stop_game_over_msg(void*)
 {
     gameStop = true;
     return true;
+}
+
+bool Protocol::stop_blind_msg()
+{
+    int index = 0;
+    char * pline = read_line_msg(index);
+
+
+    delete pline;
+    return true;
+}
+
+bool Protocol::stop_hold_cards_msg(Hold_cards &holdCards)
+{
+    int index = 0;
+    char * pline = read_line_msg(index);
+
+
+    delete pline;
+    return true;
+}
+
+bool Protocol::stop_inquire_msg(Player_bet &playerBet)
+{
+    int index = 0;
+    char * pline = read_line_msg(index);
+
+
+    delete pline;
+    return true;
+}
+
+bool Protocol::ptos_action_msg(int sock_fd)
+{
+    int index = 0;
+    char * pline = read_line_msg(index);
+
+
+    delete pline;
+    return true;
+}
+
+bool Protocol::stop_flop_msg(Public_cards &publicCards)
+{
+    int index = 0;
+    char * pline = read_line_msg(index);
+
+
+    delete pline;
+    return true;
+}
+
+bool Protocol::stop_turn_msg(Public_cards &publicCards)
+{
+    int index = 0;
+    char * pline = read_line_msg(index);
+
+
+    delete pline;
+    return true;
+}
+
+bool Protocol::stop_river_msg(Public_cards &publicCards)
+{
+    int index = 0;
+    char * pline = read_line_msg(index);
+
+
+    delete pline;
+    return true;
+}
+
+bool Protocol::stop_showdown_msg(Showdown_result &showdownResult)
+{
+    int index = 0;
+    char * pline = read_line_msg(index);
+
+
+    delete pline;
+    return true;
+}
+
+bool Protocol::stop_pot_win_msg(Win_allocation &winAllocation)
+{
+    int index = 0;
+    char * pline = read_line_msg(index);
+
+
+    delete pline;
+    return true;
+}
+
+char *Protocol::read_line_msg(int &index) const
+{
+    int len = 0;
+    const char *tep = &bufRecv[index];
+
+    while(bufRecv[index] != '\0')
+    {
+        len ++;
+        index++;
+
+        if(bufRecv[index] == '\n'){
+            char * p = (char *)malloc(len);
+            strncpy(p,tep,len);
+            p[len] = '\0';
+            index ++;
+            return p;
+        }
+    }
+    //把位置移到换行符的下一个字符
+    index ++;
 }
 
