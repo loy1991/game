@@ -211,6 +211,11 @@ Seat_info &Strategy::get_seatInfo()
     return seatInfo;
 }
 
+Player_bet &Strategy::get_playerBet()
+{
+    return playerBet;
+}
+
 int Strategy::max_succession(const unsigned int *arry, int len, int &index) const
 {
     int max_len = -1;

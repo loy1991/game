@@ -18,6 +18,7 @@ public:
     */
     card_result what_card_result();
     Seat_info& get_seatInfo();
+    Player_bet& get_playerBet();
 
 protected:
     //高牌概率

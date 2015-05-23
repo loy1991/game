@@ -116,9 +116,19 @@ private:
 /*玩家下注状态类*/
 class Player_bet
 {
+public:
+    Player_bet():totl_pot(0){}
+
+    int get_pid(int index){return pid[index];}
+    int get_bet(int index){return bet[index];}
+    player_action get_action(int index){return action[index];}
+    int get_totl_pot(){return totl_pot;}
+
+    void set_pid(int index, int val){pid[index] = val;}
+    void set_bet(int index, int val){bet[index] = val; totl_pot += val;}
+    void set_action(int index, player_action val){action[index] = val;}
 private:
     int pid[8];                         //玩家ID
-    int money[8];                       //玩家金币
     int bet[8];                         //玩家赌注
     player_action action[8];            //玩家的动作
     int totl_pot;                       //奖池数额

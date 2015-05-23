@@ -212,10 +212,33 @@ bool Protocol::stop_game_over_msg(void*)
 bool Protocol::stop_blind_msg(Player *p)
 {
     int index = 0;
-    char * pline = read_line_msg(index);
+    int count = 0;      //标记第几个人
+    char *word = NULL;  //记录单词
+    char * pline = NULL;//记录读取到的行
+    Player_bet *pb = &(p->get_strategy()->get_playerBet());
 
+    while(pline = read_line_msg(index)){
 
-    delete pline;
+        if(strcmp("blind/ ",pline) == 0)
+            continue;
+        if(strcmp("/blind ",pline) == 0)
+            break;
+
+        //分词处理
+        word = strtok(pline,": ");
+        while(word){
+
+            pb->set_pid(count,atoi(word));
+            word = strtok(NULL," ");
+
+            pb->set_bet(count, atoi(word));
+            word = strtok(NULL," ");
+
+            count ++;
+        }
+
+        delete pline;
+    }
     return true;
 }
 
