@@ -76,7 +76,7 @@ public:
           处理成功返回true，否则返回false
       */
 
-    bool stop_blind_msg();
+    bool stop_blind_msg(Player *p);
 
     /*功能：
         服务器向玩家发手牌消息
@@ -85,7 +85,7 @@ public:
       返回值：
           处理成功返回true，否则返回false
       */
-    bool stop_hold_cards_msg(Hold_cards &holdCards);
+    bool stop_hold_cards_msg(Player *p);
 
     /*功能：
         服务器向玩家发询问消息，一方面记录他人下注，另一方面，要向服务器发出“我”的动作
@@ -95,7 +95,7 @@ public:
       返回值：
           处理成功返回true，否则返回false
       */
-    bool stop_inquire_msg(Player_bet &playerBet);
+    bool stop_inquire_msg(Player *p);
 
     /*功能：
         玩家向服务器发送行动消息
@@ -113,7 +113,7 @@ public:
       返回值：
           处理成功返回true，否则返回false
       */
-    bool stop_flop_msg(Public_cards &publicCards);
+    bool stop_flop_msg(Player *p);
 
     /*功能：
         服务器向玩家发转牌消息
@@ -122,7 +122,7 @@ public:
       返回值：
           处理成功返回true，否则返回false
       */
-    bool stop_turn_msg(Public_cards &publicCards);
+    bool stop_turn_msg(Player *p);
 
     /*功能：
         服务器向玩家发河牌消息
@@ -131,7 +131,7 @@ public:
       返回值：
           处理成功返回true，否则返回false
       */
-    bool stop_river_msg(Public_cards &publicCards);
+    bool stop_river_msg(Player *p);
 
     /*功能：
         服务器向玩家发摊牌消息
@@ -140,7 +140,7 @@ public:
       返回值：
           处理成功返回true，否则返回false
       */
-    bool stop_showdown_msg(Showdown_result &showdownResult);
+    bool stop_showdown_msg(Player *p);
 
     /*功能：
         服务器向玩家发彩池分配消息
@@ -150,7 +150,7 @@ public:
       返回值：
           处理成功返回true，否则返回false
       */
-    bool stop_pot_win_msg(Win_allocation &winAllocation);
+    bool stop_pot_win_msg(Player *p);
 
     /*功能：
         从缓存中读取行，即遇到 \n

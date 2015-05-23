@@ -94,6 +94,7 @@ void Protocol::process_Msg(char *name)
             char * pline = read_line_msg(index);
 
             //进入消息处理阶段
+
             //game_over消息
             if(strcmp("game-over ",pline) == 0){
                 delete pline;
@@ -104,7 +105,52 @@ void Protocol::process_Msg(char *name)
                 delete pline;
                 stop_seat_info_msg(player->get_strategy()->get_seatInfo());
             }
-
+            //blind-msg消息
+            if(strcmp("blind/ ",pline) == 0){
+                delete pline;
+                stop_blind_msg(player);
+            }
+            //hold-cards-msg消息
+            if(strcmp("hold/ ",pline) == 0){
+                delete pline;
+                stop_hold_cards_msg(player);
+            }
+            //inquire-msg消息|发送action-msg
+            if(strcmp("inquire/ ",pline) == 0){
+                delete pline;
+                //Player_bet
+                stop_inquire_msg(player);
+            }
+            //flop-msg公牌
+            if(strcmp("flop/ ",pline) == 0){
+                delete pline;
+                //Public_cards
+                stop_flop_msg(player);
+            }
+            //turn-msg
+            if(strcmp("turn/ ",pline) == 0){
+                delete pline;
+                //Public_cards
+                stop_turn_msg(player);
+            }
+            //river-msg
+            if(strcmp("river/ ",pline) == 0){
+                delete pline;
+                //Public_cards
+                stop_river_msg(player);
+            }
+            //showdown-msg
+            if(strcmp("showdown/ ",pline) == 0){
+                delete pline;
+                //Showdown_result
+                stop_showdown_msg(player);
+            }
+            //pot-win-msg
+            if(strcmp("pot-win/ ",pline) == 0){
+                delete pline;
+                //Win_allocation
+                stop_pot_win_msg(player);
+            }
         }
     }
 }
@@ -163,7 +209,7 @@ bool Protocol::stop_game_over_msg(void*)
     return true;
 }
 
-bool Protocol::stop_blind_msg()
+bool Protocol::stop_blind_msg(Player *p)
 {
     int index = 0;
     char * pline = read_line_msg(index);
@@ -173,7 +219,7 @@ bool Protocol::stop_blind_msg()
     return true;
 }
 
-bool Protocol::stop_hold_cards_msg(Hold_cards &holdCards)
+bool Protocol::stop_hold_cards_msg(Player *p)
 {
     int index = 0;
     char * pline = read_line_msg(index);
@@ -183,7 +229,7 @@ bool Protocol::stop_hold_cards_msg(Hold_cards &holdCards)
     return true;
 }
 
-bool Protocol::stop_inquire_msg(Player_bet &playerBet)
+bool Protocol::stop_inquire_msg(Player *p)
 {
     int index = 0;
     char * pline = read_line_msg(index);
@@ -203,7 +249,7 @@ bool Protocol::ptos_action_msg(int sock_fd)
     return true;
 }
 
-bool Protocol::stop_flop_msg(Public_cards &publicCards)
+bool Protocol::stop_flop_msg(Player *p)
 {
     int index = 0;
     char * pline = read_line_msg(index);
@@ -213,7 +259,7 @@ bool Protocol::stop_flop_msg(Public_cards &publicCards)
     return true;
 }
 
-bool Protocol::stop_turn_msg(Public_cards &publicCards)
+bool Protocol::stop_turn_msg(Player *p)
 {
     int index = 0;
     char * pline = read_line_msg(index);
@@ -223,7 +269,7 @@ bool Protocol::stop_turn_msg(Public_cards &publicCards)
     return true;
 }
 
-bool Protocol::stop_river_msg(Public_cards &publicCards)
+bool Protocol::stop_river_msg(Player *p)
 {
     int index = 0;
     char * pline = read_line_msg(index);
@@ -233,7 +279,7 @@ bool Protocol::stop_river_msg(Public_cards &publicCards)
     return true;
 }
 
-bool Protocol::stop_showdown_msg(Showdown_result &showdownResult)
+bool Protocol::stop_showdown_msg(Player *p)
 {
     int index = 0;
     char * pline = read_line_msg(index);
@@ -243,7 +289,7 @@ bool Protocol::stop_showdown_msg(Showdown_result &showdownResult)
     return true;
 }
 
-bool Protocol::stop_pot_win_msg(Win_allocation &winAllocation)
+bool Protocol::stop_pot_win_msg(Player *p)
 {
     int index = 0;
     char * pline = read_line_msg(index);
