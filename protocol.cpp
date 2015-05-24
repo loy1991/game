@@ -6,6 +6,9 @@
 #include <sys/socket.h> //socket(),bind()
 #include <arpa/inet.h>  //Inet_pton(),htons()
 
+//#include <linux/tcp.h>  //IPPROTO_TCP选项
+#include <netinet/tcp.h>
+
 #include <stdio.h>      //sprintf()
 #include <stdlib.h>     //strcpy
 #include <strings.h>    //bzero()
@@ -46,6 +49,7 @@ int Protocol::startTcp()
        return(-1);
     }
     setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
+    setsockopt(sock_fd, IPPROTO_TCP, TCP_NODELAY, &on, sizeof(on));
 
     //绑定本地IP和端口
     struct sockaddr_in cliaddr;
@@ -84,76 +88,76 @@ void Protocol::process_Msg(char *name)
 {
     ptos_reg_msg(name);//向服务器注册自己的 pid 和 pname
     int len = 0;
+    int index = 0;
+    char *pline = NULL;
+
     while(gameStop == false)
     {
         if ((len = recv(sock_fd, bufRecv, 500, 0)) != 0) {
             bufRecv[len]='\0';
+            cout << "--------------------"<<endl;
+            cout << bufRecv <<endl;
+            cout << "--------------------"<<endl;
 
-            //获取数据的首行
-            int index = 0;
-            char * pline = read_line_msg(index);
+            index = 0;
 
-            //进入消息处理阶段
+            while((pline = read_line_msg(index)) != NULL){
+            //=====================进入消息处理阶段=====================
+                if(strcmp("seat/ ",pline) == 0){
+                    stat = SEAT_INFO_MSG;
+                    cout << "seat_info-msg" << index << endl;
+                }
+                if(strcmp("blind/ ",pline) == 0){
+                    stat = BLIND_MSG;
+                    cout << "blind-msg" << index << endl;
+                }
+                if(strcmp("hold/ ",pline) == 0){
+                    stat = HOLD_CARDS_MSG;
+                    cout << "hold-cards-msg" << index << endl;
+                }
+                if(strcmp("inquire/ ",pline) == 0){
+                    stat = INQUIRE_MSG;
+                    cout << "inquire-msg" << index << endl;
+                }
+                if(strcmp("flop/ ",pline) == 0){
+                    stat = FLOP_MSG;
+                    cout << "flop-msg" << index << endl;
+                }
+                if(strcmp("turn/ ",pline) == 0){
+                    stat = TURN_MSG;
+                    cout << "turn-msg" << index << endl;
+                }
+                if(strcmp("river/ ",pline) == 0){
+                    stat = RIVER_MSG;
+                    cout << "river-msg" << index << endl;
+                }
+                if(strcmp("showdown/ ",pline) == 0){
+                    stat = SHOWDOWN_MSG;
+                    cout << "showdown-msg" << index << endl;
+                }
+                if(strcmp("pot-win/ ",pline) == 0){
+                    stat = POT_WIN_MSG;
+                    cout << "pot-win-msg" << index << endl;
+                }
+                if(strcmp("game-over ",pline) == 0){
+                    stat = GAME_OVER_MSG;
+                    cout << "game-over-msg" << index << endl;
+                }
+                switch(stat)
+                {
+                    case(SEAT_INFO_MSG):stop_seat_info_msg(player,index);break;
+                    case(BLIND_MSG):stop_blind_msg(player, index);break;
+                    case(HOLD_CARDS_MSG):stop_hold_cards_msg(player, index);break;
+                    case(INQUIRE_MSG):stop_inquire_msg(player, index); ptos_action_msg(player);break;
+                    case(FLOP_MSG):stop_flop_msg(player, index);break;
+                    case(TURN_MSG):stop_turn_msg(player, index);break;
+                    case(RIVER_MSG):stop_river_msg(player, index);break;
+                    case(SHOWDOWN_MSG):stop_showdown_msg(player, index);break;
+                    case(POT_WIN_MSG):stop_pot_win_msg(player, index);break;
+                    case(GAME_OVER_MSG):stop_game_over_msg(0);break;
+                }
 
-            //game_over消息
-            if(strcmp("game-over ",pline) == 0){
-                delete pline;
-                stop_game_over_msg(0);
-            }
-            //seat_info消息
-            if(strcmp("seat/ ",pline) == 0){
-                delete pline;
-                stop_seat_info_msg(player->get_strategy()->get_seatInfo());
-            }
-            //blind-msg消息
-            if(strcmp("blind/ ",pline) == 0){
-                delete pline;
-                stop_blind_msg(player);
-            }
-            //hold-cards-msg消息
-            if(strcmp("hold/ ",pline) == 0){
-                delete pline;
-                stop_hold_cards_msg(player);
-            }
-            //inquire-msg消息|发送action-msg
-            if(strcmp("inquire/ ",pline) == 0){
-                delete pline;
-                //Player_bet
-                stop_inquire_msg(player);
-                ptos_action_msg(player);
-            }
-            //flop-msg公牌
-            if(strcmp("flop/ ",pline) == 0){
-                delete pline;
-                //Public_cards
-                stop_flop_msg(player);
-            }
-            //turn-msg
-            if(strcmp("turn/ ",pline) == 0){
-                delete pline;
-                //Public_cards
-                stop_turn_msg(player);
-                cout << "turn card" << endl;
-            }
-            //river-msg
-            if(strcmp("river/ ",pline) == 0){
-                delete pline;
-                //Public_cards
-                stop_river_msg(player);
-                cout << "river card" << endl;
-            }
-            //showdown-msg
-            if(strcmp("showdown/ ",pline) == 0){
-                delete pline;
-                //Showdown_result
-                stop_showdown_msg(player);
-                cout << "showdown" << endl;
-            }
-            //pot-win-msg
-            if(strcmp("pot-win/ ",pline) == 0){
-                delete pline;
-                //Win_allocation
-                stop_pot_win_msg(player);
+                free(pline);
             }
         }
     }
@@ -170,14 +174,15 @@ bool Protocol::ptos_reg_msg(char *pname)
     return true;
 }
 
-bool Protocol::stop_seat_info_msg(Seat_info &seat)
+
+bool Protocol::stop_seat_info_msg(Player *p, int &index)
 {
-    int index = 0;
     int count = 0;      //标记第几个人
     char *word = NULL;  //记录单词
     char * pline = NULL;//记录读取到的行
+    Seat_info *seat = &(p->get_strategy()->get_seatInfo());
 
-    while(pline = read_line_msg(index)){
+    while((pline = read_line_msg(index)) != NULL){
 
         if(strcmp("seat/ ",pline) == 0)
             continue;
@@ -192,36 +197,37 @@ bool Protocol::stop_seat_info_msg(Seat_info &seat)
             if(strcmp("blind:",word) == 0) {word = strtok(NULL," \n"); continue;}
             if(strcmp("big",word) == 0) {word = strtok(NULL," \n"); continue;}
 
-            seat.set_pid(count,atoi(word));
+            seat->set_pid(count,atoi(word));
             word = strtok(NULL," ");
 
-            seat.set_jetton(count, atoi(word));
+            seat->set_jetton(count, atoi(word));
             word = strtok(NULL," ");
 
-            seat.set_money(count, atoi(word));
+            seat->set_money(count, atoi(word));
             word = strtok(NULL," ");
             count ++;
         }
-        delete pline;
+        free(pline);
     }
     return true;
 }
 
-bool Protocol::stop_game_over_msg(void*)
+
+bool Protocol::stop_game_over_msg(Player *p)
 {
     gameStop = true;
     return true;
 }
 
-bool Protocol::stop_blind_msg(Player *p)
+
+bool Protocol::stop_blind_msg(Player *p, int &index)
 {
-    int index = 0;
     int count = 0;      //标记第几个人
     char *word = NULL;  //记录单词
     char * pline = NULL;//记录读取到的行
     Player_bet *pb = &(p->get_strategy()->get_playerBet());
 
-    while(pline = read_line_msg(index)){
+    while((pline = read_line_msg(index)) != NULL){
 
         if(strcmp("blind/ ",pline) == 0)
             continue;
@@ -240,21 +246,20 @@ bool Protocol::stop_blind_msg(Player *p)
 
             count ++;
         }
-
-        delete pline;
+        free(pline);
     }
     return true;
 }
 
-bool Protocol::stop_hold_cards_msg(Player *p)
+
+bool Protocol::stop_hold_cards_msg(Player *p, int &index)
 {
-    int index = 0;
     int count = 0;      //标记第几个人
     char *word = NULL;  //记录单词
     char * pline = NULL;//记录读取到的行
     Hold_cards *ph = &(p->get_strategy()->get_holdCards());
 
-    while(pline = read_line_msg(index)){
+    while((pline = read_line_msg(index)) != NULL){
 
         if(strcmp("hold/ ",pline) == 0)
             continue;
@@ -273,15 +278,14 @@ bool Protocol::stop_hold_cards_msg(Player *p)
 
             count ++;
         }
-
-        delete pline;
+        free(pline);
     }
     return true;
 }
 
-bool Protocol::stop_inquire_msg(Player *p)
+
+bool Protocol::stop_inquire_msg(Player *p, int &index)
 {
-    int index = 0;
     int count = 0;      //标记第几个人
     char *word = NULL;  //记录单词
     char * pline = NULL;//记录读取到的行
@@ -359,9 +363,8 @@ bool Protocol::ptos_action_msg(Player *p)
 }
 
 
-bool Protocol::stop_flop_msg(Player *p)
+bool Protocol::stop_flop_msg(Player *p, int &index)
 {
-    int index = 0;
     int count = 0;      //标记第张牌
     char *word = NULL;  //记录单词
     char * pline = NULL;//记录读取到的行
@@ -393,15 +396,14 @@ bool Protocol::stop_flop_msg(Player *p)
 }
 
 
-bool Protocol::stop_turn_msg(Player *p)
+bool Protocol::stop_turn_msg(Player *p, int &index)
 {
-    int index = 0;
     char *word = NULL;  //记录单词
     char * pline = NULL;//记录读取到的行
 
     Public_cards *pc = &(p->get_strategy()->get_publicCards());
 
-    while(pline = read_line_msg(index)){
+    while((pline = read_line_msg(index)) != NULL){
 
         if(strcmp("turn/ ",pline) == 0)
             continue;
@@ -419,21 +421,20 @@ bool Protocol::stop_turn_msg(Player *p)
             word = strtok(NULL," ");
 
         }
-        delete pline;
+        free(pline);
     }
     return true;
 }
 
 
-bool Protocol::stop_river_msg(Player *p)
+bool Protocol::stop_river_msg(Player *p, int &index)
 {
-    int index = 0;
     char *word = NULL;  //记录单词
     char * pline = NULL;//记录读取到的行
 
     Public_cards *pc = &(p->get_strategy()->get_publicCards());
 
-    while(pline = read_line_msg(index)){
+    while((pline = read_line_msg(index)) != NULL){
 
         if(strcmp("river/ ",pline) == 0)
             continue;
@@ -451,31 +452,73 @@ bool Protocol::stop_river_msg(Player *p)
             word = strtok(NULL," ");
 
         }
-        delete pline;
+        free(pline);
     }
     return true;
 }
 
 
-bool Protocol::stop_showdown_msg(Player *p)
+bool Protocol::stop_showdown_msg(Player *p, int &index)
 {
-    int index = 0;
-    char * pline = read_line_msg(index);
+    char *word = NULL;  //记录单词
+    char * pline = NULL;//记录读取到的行
 
+    Showdown_result *pr = &(p->get_strategy()->get_showdownResult());
 
-    delete pline;
+//    while((pline = read_line_msg(index)) != NULL){
+
+//        if(strcmp("showdown/ ",pline) == 0)
+//            continue;
+//        if(strcmp("/showdown ",pline) == 0)
+//            break;
+
+//        //分词处理
+//        word = strtok(pline," ");
+//        while(word){
+
+//            pc->set_color(4, s2card_color(word));
+//            word = strtok(NULL," ");
+
+//            pc->set_point(4, s2card_point(word));
+//            word = strtok(NULL," ");
+
+//        }
+//        free(pline);
+//    }
     return true;
 }
 
-bool Protocol::stop_pot_win_msg(Player *p)
+
+bool Protocol::stop_pot_win_msg(Player *p, int &index)
 {
-    int index = 0;
-    char * pline = read_line_msg(index);
+    char *word = NULL;  //记录单词
+    char * pline = NULL;//记录读取到的行
 
+    Win_allocation *pa = &(p->get_strategy()->get_winAllocation());
 
-    delete pline;
+    while((pline = read_line_msg(index)) != NULL){
+
+        if(strcmp("pot-win/ ",pline) == 0)
+            continue;
+        if(strcmp("/pot-win ",pline) == 0)
+            break;
+
+        //分词处理
+        word = strtok(pline," ");
+//        while(word){
+
+//            pc->set_color(4, s2card_color(word));
+//            word = strtok(NULL," ");
+
+//            pc->set_point(4, s2card_point(word));
+//            word = strtok(NULL," ");
+
+//        }
+        free(pline);
+    }
     return true;
 }
+
 
 char *Protocol::read_line_msg(int &index) const
 {
@@ -491,11 +534,10 @@ char *Protocol::read_line_msg(int &index) const
             char * p = (char *)malloc(len);
             strncpy(p,tep,len);
             p[len] = '\0';
-            index ++;
+            index ++;    //把位置移到换行符的下一个字符
             return p;
         }
     }
-    //把位置移到换行符的下一个字符
-    index ++;
+    return NULL;
 }
 

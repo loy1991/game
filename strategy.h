@@ -23,7 +23,8 @@ public:
     Player_bet& get_playerBet();
     Hold_cards& get_holdCards();
     Public_cards& get_publicCards();
-
+    Showdown_result& get_showdownResult();
+    Win_allocation& get_winAllocation();
 protected:
     //高牌概率
     float high_card_chance();

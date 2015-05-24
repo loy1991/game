@@ -226,6 +226,16 @@ Public_cards &Strategy::get_publicCards()
     return publicCards;
 }
 
+Showdown_result &Strategy::get_showdownResult()
+{
+    return showdownResult;
+}
+
+Win_allocation &Strategy::get_winAllocation()
+{
+    return winAllocation;
+}
+
 int Strategy::max_succession(const unsigned int *arry, int len, int &index) const
 {
     int max_len = -1;

@@ -58,7 +58,7 @@ public:
       返回值：
           设置成功则返回true，否则返回false
       */
-    bool stop_seat_info_msg(Seat_info &seat);
+    bool stop_seat_info_msg(Player *p,int &index);
     /*功能：
         服务器向玩家发游戏结束消息
       参数：
@@ -66,7 +66,7 @@ public:
       返回值：
           游戏结束则返回true，否则返回false
       */
-    bool stop_game_over_msg(void *);
+    bool stop_game_over_msg(Player *p);
 
     /*功能：
         服务器向玩家发盲注消息，只处理与本玩家ID有关的信息
@@ -76,7 +76,7 @@ public:
           处理成功返回true，否则返回false
       */
 
-    bool stop_blind_msg(Player *p);
+    bool stop_blind_msg(Player *p,int &index);
 
     /*功能：
         服务器向玩家发手牌消息
@@ -85,7 +85,7 @@ public:
       返回值：
           处理成功返回true，否则返回false
       */
-    bool stop_hold_cards_msg(Player *p);
+    bool stop_hold_cards_msg(Player *p, int &index);
 
     /*功能：
         服务器向玩家发询问消息，一方面记录他人下注，另一方面，要向服务器发出“我”的动作
@@ -95,7 +95,7 @@ public:
       返回值：
           处理成功返回true，否则返回false
       */
-    bool stop_inquire_msg(Player *p);
+    bool stop_inquire_msg(Player *p, int &index);
 
     /*功能：
         玩家向服务器发送行动消息
@@ -113,7 +113,7 @@ public:
       返回值：
           处理成功返回true，否则返回false
       */
-    bool stop_flop_msg(Player *p);
+    bool stop_flop_msg(Player *p, int &index);
 
     /*功能：
         服务器向玩家发转牌消息
@@ -122,7 +122,7 @@ public:
       返回值：
           处理成功返回true，否则返回false
       */
-    bool stop_turn_msg(Player *p);
+    bool stop_turn_msg(Player *p, int &index);
 
     /*功能：
         服务器向玩家发河牌消息
@@ -131,7 +131,7 @@ public:
       返回值：
           处理成功返回true，否则返回false
       */
-    bool stop_river_msg(Player *p);
+    bool stop_river_msg(Player *p, int &index);
 
     /*功能：
         服务器向玩家发摊牌消息
@@ -140,7 +140,7 @@ public:
       返回值：
           处理成功返回true，否则返回false
       */
-    bool stop_showdown_msg(Player *p);
+    bool stop_showdown_msg(Player *p, int &index);
 
     /*功能：
         服务器向玩家发彩池分配消息
@@ -150,7 +150,7 @@ public:
       返回值：
           处理成功返回true，否则返回false
       */
-    bool stop_pot_win_msg(Player *p);
+    bool stop_pot_win_msg(Player *p, int &index);
 
     /*功能：
         从缓存中读取行，即遇到 \n
@@ -177,6 +177,7 @@ private:
 
     //游戏结束标记
     bool gameStop;
+    game_state stat;
 
     //消息接受与发送缓存
     char bufRecv[500];
