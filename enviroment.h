@@ -133,7 +133,7 @@ private:
 class Player_bet
 {
 public:
-    Player_bet():totl_pot(0),player_count(0){}
+    Player_bet():player_count(0),totl_pot(0){}
 
     int get_pid(int index){return pid[index];}
     int get_bet(int index){return bet[index];}
@@ -169,7 +169,7 @@ public:
     card_color get_color(int index){return _color[index];}
     card_point get_point(int index){return _point[index];}
 
-    void set_color(int index, card_color val){_color[index] = val;}
+    void set_color(int index, card_color val){_color[index] = val; _card_num++;}
     void set_point(int index, card_point val){_point[index] = val;}
 
 
@@ -182,9 +182,12 @@ private:
 /*摊牌结果*/
 class Showdown_result
 {
+public:
+    int get_pid(int index){return _pid[index];}
+    void set_pid(int index, int val){_pid[index] = val;}
 private:
-    int pid[8];                         //玩家ID
-    card_result nut_hand[8];            //玩家结果牌型
+    int _pid[8];                         //玩家ID
+    card_result _nut_hand[8];            //玩家结果牌型
 };
 
 /*彩池金额分配*/

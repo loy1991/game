@@ -127,28 +127,27 @@ void Protocol::process_Msg(char *name)
                 delete pline;
                 //Public_cards
                 stop_flop_msg(player);
-                for(int i = 0; i< 3; i++){
-                    cout << player->get_strategy()->get_publicCards().get_color(i) << "\t";
-                    cout << player->get_strategy()->get_publicCards().get_point(i) << endl;
-                }
             }
             //turn-msg
             if(strcmp("turn/ ",pline) == 0){
                 delete pline;
                 //Public_cards
                 stop_turn_msg(player);
+                cout << "turn card" << endl;
             }
             //river-msg
             if(strcmp("river/ ",pline) == 0){
                 delete pline;
                 //Public_cards
                 stop_river_msg(player);
+                cout << "river card" << endl;
             }
             //showdown-msg
             if(strcmp("showdown/ ",pline) == 0){
                 delete pline;
                 //Showdown_result
                 stop_showdown_msg(player);
+                cout << "showdown" << endl;
             }
             //pot-win-msg
             if(strcmp("pot-win/ ",pline) == 0){
@@ -397,22 +396,66 @@ bool Protocol::stop_flop_msg(Player *p)
 bool Protocol::stop_turn_msg(Player *p)
 {
     int index = 0;
-    char * pline = read_line_msg(index);
+    char *word = NULL;  //记录单词
+    char * pline = NULL;//记录读取到的行
 
+    Public_cards *pc = &(p->get_strategy()->get_publicCards());
 
-    delete pline;
+    while(pline = read_line_msg(index)){
+
+        if(strcmp("turn/ ",pline) == 0)
+            continue;
+        if(strcmp("/turn ",pline) == 0)
+            break;
+
+        //分词处理
+        word = strtok(pline," ");
+        while(word){
+
+            pc->set_color(3, s2card_color(word));
+            word = strtok(NULL," ");
+
+            pc->set_point(3, s2card_point(word));
+            word = strtok(NULL," ");
+
+        }
+        delete pline;
+    }
     return true;
 }
+
 
 bool Protocol::stop_river_msg(Player *p)
 {
     int index = 0;
-    char * pline = read_line_msg(index);
+    char *word = NULL;  //记录单词
+    char * pline = NULL;//记录读取到的行
 
+    Public_cards *pc = &(p->get_strategy()->get_publicCards());
 
-    delete pline;
+    while(pline = read_line_msg(index)){
+
+        if(strcmp("river/ ",pline) == 0)
+            continue;
+        if(strcmp("/river ",pline) == 0)
+            break;
+
+        //分词处理
+        word = strtok(pline," ");
+        while(word){
+
+            pc->set_color(4, s2card_color(word));
+            word = strtok(NULL," ");
+
+            pc->set_point(4, s2card_point(word));
+            word = strtok(NULL," ");
+
+        }
+        delete pline;
+    }
     return true;
 }
+
 
 bool Protocol::stop_showdown_msg(Player *p)
 {
