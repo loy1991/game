@@ -12,6 +12,7 @@ public:
 
     /*初始化客户端参数*/
     Protocol();
+    ~Protocol();
     Protocol(const char *serverIP, int serverPT, const char *myIP, int myPT, int pid);
 
     /*功能：
@@ -180,9 +181,9 @@ private:
     game_state stat;
 
     //消息接受与发送缓存
-    char bufRecv[500];
+    char bufRecv[1000];
     char bufSend[100];
-
+    mutable char lines[100];
 };
 
 #endif // PROTOCOL_H

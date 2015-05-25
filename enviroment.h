@@ -51,6 +51,7 @@ enum card_color
 
 enum game_state
 {
+    GAME_STATE_UN_KNOW = -1,
     REG_MSG = 18,
     SEAT_INFO_MSG = 19,
     GAME_OVER_MSG = 20,

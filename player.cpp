@@ -6,6 +6,17 @@
 #include <iostream>
 using namespace std;
 
+const int Player::HIGH_CARD_ratio = 1303488;      //高牌
+const int Player::ONE_PAIR_ratio = 1098240;       //一对
+const int Player::TWO_PAIR_ratio = 123552;       //两对
+const int Player::THREE_OF_A_KIND_ratio = 54912;//三条
+const int Player::STRAIGHT_ratio = 9216;       //顺子
+const int Player::FLUSH_ratio = 5148;          //同花
+const int Player::FULL_HOUSE_ratio = 3744;     //葫芦
+const int Player::FOUR_OF_A_KIND_ratio = 624; //四条
+const int Player::STRAIGHT_FLUSH_ratio = 36; //同花顺
+const int Player::ALL_CARDS_STYLE_ratio = 2598960;//所有牌型
+
 Player::Player(const char *SerIp, int SerPt, const char *MyIp, int MyPt, int pid, char *name)
 {
     pro = new Protocol(SerIp, SerPt, MyIp, MyPt,pid);//生成协议处理

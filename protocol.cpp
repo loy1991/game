@@ -23,6 +23,12 @@ Protocol::Protocol()
 
 }
 
+Protocol::~Protocol()
+{
+    delete[] _serverIP;
+    delete[] _myIP;
+}
+
 Protocol::Protocol(const char *serverIP, int serverPT, const char *myIP, int myPT, int pid)
 {
     int len = strlen(serverIP);
@@ -93,7 +99,7 @@ void Protocol::process_Msg(char *name)
 
     while(gameStop == false)
     {
-        if ((len = recv(sock_fd, bufRecv, 500, 0)) != 0) {
+        if ((len = recv(sock_fd, bufRecv, 1000, 0)) != 0) {
             bufRecv[len]='\0';
             cout << "--------------------"<<endl;
             cout << bufRecv <<endl;
@@ -143,6 +149,7 @@ void Protocol::process_Msg(char *name)
                     stat = GAME_OVER_MSG;
                     cout << "game-over-msg" << index << endl;
                 }
+                    cout << "same_as_upper" << endl;
                 switch(stat)
                 {
                     case(SEAT_INFO_MSG):stop_seat_info_msg(player,index);break;
@@ -157,7 +164,6 @@ void Protocol::process_Msg(char *name)
                     case(GAME_OVER_MSG):stop_game_over_msg(0);break;
                 }
 
-                free(pline);
             }
         }
     }
@@ -207,7 +213,6 @@ bool Protocol::stop_seat_info_msg(Player *p, int &index)
             word = strtok(NULL," ");
             count ++;
         }
-        free(pline);
     }
     return true;
 }
@@ -246,7 +251,6 @@ bool Protocol::stop_blind_msg(Player *p, int &index)
 
             count ++;
         }
-        free(pline);
     }
     return true;
 }
@@ -278,7 +282,6 @@ bool Protocol::stop_hold_cards_msg(Player *p, int &index)
 
             count ++;
         }
-        free(pline);
     }
     return true;
 }
@@ -327,7 +330,6 @@ bool Protocol::stop_inquire_msg(Player *p, int &index)
             word = strtok(NULL," ");
             count ++;
         }
-        delete pline;
     }
     return true;
 }
@@ -390,7 +392,6 @@ bool Protocol::stop_flop_msg(Player *p, int &index)
 
             count ++;
         }
-        delete pline;
     }
     return true;
 }
@@ -421,7 +422,6 @@ bool Protocol::stop_turn_msg(Player *p, int &index)
             word = strtok(NULL," ");
 
         }
-        free(pline);
     }
     return true;
 }
@@ -444,7 +444,6 @@ bool Protocol::stop_river_msg(Player *p, int &index)
         //分词处理
         word = strtok(pline," ");
         while(word){
-
             pc->set_color(4, s2card_color(word));
             word = strtok(NULL," ");
 
@@ -452,7 +451,6 @@ bool Protocol::stop_river_msg(Player *p, int &index)
             word = strtok(NULL," ");
 
         }
-        free(pline);
     }
     return true;
 }
@@ -460,10 +458,10 @@ bool Protocol::stop_river_msg(Player *p, int &index)
 
 bool Protocol::stop_showdown_msg(Player *p, int &index)
 {
-    char *word = NULL;  //记录单词
-    char * pline = NULL;//记录读取到的行
+//    char *word = NULL;  //记录单词
+//    char * pline = NULL;//记录读取到的行
 
-    Showdown_result *pr = &(p->get_strategy()->get_showdownResult());
+//    Showdown_result *pr = &(p->get_strategy()->get_showdownResult());
 
 //    while((pline = read_line_msg(index)) != NULL){
 
@@ -483,7 +481,6 @@ bool Protocol::stop_showdown_msg(Player *p, int &index)
 //            word = strtok(NULL," ");
 
 //        }
-//        free(pline);
 //    }
     return true;
 }
@@ -514,7 +511,6 @@ bool Protocol::stop_pot_win_msg(Player *p, int &index)
 //            word = strtok(NULL," ");
 
 //        }
-        free(pline);
     }
     return true;
 }
@@ -531,7 +527,7 @@ char *Protocol::read_line_msg(int &index) const
         index++;
 
         if(bufRecv[index] == '\n'){
-            char * p = (char *)malloc(len);
+            char *p = lines;
             strncpy(p,tep,len);
             p[len] = '\0';
             index ++;    //把位置移到换行符的下一个字符

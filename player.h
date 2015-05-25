@@ -53,10 +53,11 @@ private:
     /*我的资产情况*/
     int my_money;   //我的金钱
     int my_jetton;  //我的筹码
+
+    player_action myAction;   //我的行动
     int my_bet;     //我的赌注
 
     player_action lPAction;   //上家的行动
-    player_action myAction;   //我的行动
 
     Protocol *pro;   //代表协议通信
     Strategy *stg;   //代表策略
@@ -65,6 +66,18 @@ private:
     pthread_t thread_pro;
     pthread_t thread_stg;
 
+public:
+    //各种牌型占的比例
+    const static int HIGH_CARD_ratio;      //高牌
+    const static int ONE_PAIR_ratio;       //一对
+    const static int TWO_PAIR_ratio;       //两对
+    const static int THREE_OF_A_KIND_ratio;//三条
+    const static int STRAIGHT_ratio;       //顺子
+    const static int FLUSH_ratio;          //同花
+    const static int FULL_HOUSE_ratio;     //葫芦
+    const static int FOUR_OF_A_KIND_ratio; //四条
+    const static int STRAIGHT_FLUSH_ratio; //同花顺
+    const static int ALL_CARDS_STYLE_ratio;//所有牌型
 };
 
 #endif // PLAYER_H

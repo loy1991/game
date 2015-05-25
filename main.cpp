@@ -19,6 +19,7 @@ int main(int argc, char* argv[])
     Player p(argv[1], atoi(argv[2]), argv[3],atoi(argv[4]), atoi(argv[5]));
     p.start_PlayCard();
 
+//    cout << Player::ALL_CARDS_STYLE_ratio << endl;
     return 0;
 
 }
