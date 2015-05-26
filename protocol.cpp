@@ -111,6 +111,7 @@ void Protocol::process_Msg(char *name)
             //=====================进入消息处理阶段=====================
                 if(strcmp("seat/ ",pline) == 0){
                     stat = SEAT_INFO_MSG;
+                    player->inform_match_again();
                     cout << "seat_info-msg" << index << endl;
                 }
                 if(strcmp("blind/ ",pline) == 0){
@@ -119,6 +120,7 @@ void Protocol::process_Msg(char *name)
                 }
                 if(strcmp("hold/ ",pline) == 0){
                     stat = HOLD_CARDS_MSG;
+                    player->inform_game_state(HOLD_CARDS_MSG);//通知player到达手牌状态
                     cout << "hold-cards-msg" << index << endl;
                 }
                 if(strcmp("inquire/ ",pline) == 0){
@@ -127,18 +129,22 @@ void Protocol::process_Msg(char *name)
                 }
                 if(strcmp("flop/ ",pline) == 0){
                     stat = FLOP_MSG;
+                    player->inform_game_state(FLOP_MSG);//通知player到达手牌状态
                     cout << "flop-msg" << index << endl;
                 }
                 if(strcmp("turn/ ",pline) == 0){
                     stat = TURN_MSG;
+                    player->inform_game_state(TURN_MSG);//通知player到达手牌状态
                     cout << "turn-msg" << index << endl;
                 }
                 if(strcmp("river/ ",pline) == 0){
                     stat = RIVER_MSG;
+                    player->inform_game_state(RIVER_MSG);//通知player到达手牌状态
                     cout << "river-msg" << index << endl;
                 }
                 if(strcmp("showdown/ ",pline) == 0){
                     stat = SHOWDOWN_MSG;
+
                     cout << "showdown-msg" << index << endl;
                 }
                 if(strcmp("pot-win/ ",pline) == 0){
@@ -214,6 +220,7 @@ bool Protocol::stop_seat_info_msg(Player *p, int &index)
             count ++;
         }
     }
+    seat->set_people_num(count);//设置当前比赛的人数
     return true;
 }
 
@@ -283,6 +290,7 @@ bool Protocol::stop_hold_cards_msg(Player *p, int &index)
             count ++;
         }
     }
+    player->get_strategy()->inform_hold();
     return true;
 }
 
@@ -393,6 +401,7 @@ bool Protocol::stop_flop_msg(Player *p, int &index)
             count ++;
         }
     }
+    player->get_strategy()->inform_flop();
     return true;
 }
 
@@ -423,6 +432,7 @@ bool Protocol::stop_turn_msg(Player *p, int &index)
 
         }
     }
+    player->get_strategy()->inform_turn();
     return true;
 }
 
@@ -452,6 +462,7 @@ bool Protocol::stop_river_msg(Player *p, int &index)
 
         }
     }
+    player->get_strategy()->inform_river();
     return true;
 }
 

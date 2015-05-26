@@ -95,3 +95,45 @@ int Seat_info::get_index(int id)
     return -1;
 }
 
+
+/*==============手牌类==============*/
+void Hold_cards::same_color()
+{
+    if(_color[0] == _color[1])
+        info_same_color = true;
+}
+
+void Hold_cards::distance_5()
+{
+    int dis = -1;
+    dis = ((dis = (_point[0] - _point[1])) >= 0) ? dis:-dis;
+    if(dis == 0)
+        info_double = true;
+    if(dis <= 5)
+        info_distance_5 = true;
+}
+
+void Hold_cards::big_card()
+{
+    if(_point[0] > TEN)
+        info_big_card_num++;
+    if(_point[1] > TEN)
+        info_big_card_num++;
+}
+
+void Hold_cards::compute_info()
+{
+    clean_info();
+    same_color();
+    distance_5();
+    big_card();
+}
+
+void Hold_cards::clean_info()
+{
+    info_double = false;      //是对子
+    info_distance_5 = false;  //距离是5以内
+    info_same_color = false;  //同样的颜色
+    info_big_card_num = 0;//有大牌存在
+}
+

@@ -1,7 +1,15 @@
 #include "strategy.h"
 #include "string.h"
+
+#include <iostream>
+using namespace std;
+
 Strategy::Strategy()
 {
+    game_process_hold = false;
+    game_process_flop = false;
+    game_process_turn = false;
+    game_process_river = false;
 }
 
 card_result Strategy::what_card_result()
@@ -234,6 +242,51 @@ Showdown_result &Strategy::get_showdownResult()
 Win_allocation &Strategy::get_winAllocation()
 {
     return winAllocation;
+}
+
+void Strategy::start_compute()
+{
+    while(1){
+        if(game_process_hold | game_process_flop){
+
+            if(game_process_hold){//hold牌计算
+
+                this->holdCards.compute_info();
+                game_process_hold = false;  //计算完之后修改状态
+                cout << "strategy::start_compute_holdCards.compute_info()" << endl;
+            }
+            if(game_process_flop){//flop牌计算
+                game_process_flop = false;  //计算完之后修改状态
+            }
+            if(game_process_turn){//turn牌计算
+                game_process_turn = false;  //计算完之后修改状态
+            }
+            if(game_process_river){//river牌计算
+                game_process_river = false;  //计算完之后修改状态
+            }
+
+        }
+    }
+}
+
+void Strategy::inform_hold()
+{
+    game_process_hold = true;
+}
+
+void Strategy::inform_flop()
+{
+    game_process_flop = true;
+}
+
+void Strategy::inform_turn()
+{
+    game_process_turn = true;
+}
+
+void Strategy::inform_river()
+{
+    game_process_river = true;
 }
 
 int Strategy::max_succession(const unsigned int *arry, int len, int &index) const

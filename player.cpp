@@ -19,6 +19,7 @@ const int Player::ALL_CARDS_STYLE_ratio = 2598960;//所有牌型
 
 Player::Player(const char *SerIp, int SerPt, const char *MyIp, int MyPt, int pid, char *name)
 {
+    _pid = pid;
     pro = new Protocol(SerIp, SerPt, MyIp, MyPt,pid);//生成协议处理
     stg = new Strategy();
 
@@ -26,6 +27,9 @@ Player::Player(const char *SerIp, int SerPt, const char *MyIp, int MyPt, int pid
     my_jetton = 0;  //我的筹码
 
     _name = name;
+
+    current_game_process = GAME_STATE_UN_KNOW;
+    current_match_time = 0;
 }
 
 Player::~Player()
@@ -70,15 +74,54 @@ void Player::start_PlayCard()
     pthread_join(thread_stg,0);
 }
 
+void Player::inform_game_state(game_state sta)
+{
+    current_game_process = sta;
+}
+
+void Player::inform_match_again()
+{
+    current_match_time++;
+}
+
 Strategy *Player::get_strategy()
 {
     return stg;
 }
 
+//返回经过策略计算的动作
 player_action Player::get_my_action()
 {
-    //返回经过策略计算的动作，此处测试，返回call
-    myAction = all_in;
+    //(1)弃牌 BEGIN_GAME_FOLD_TIMES 局，
+    //期间统计选手的打牌风格，统计疯狗和怕死鬼
+    if(current_match_time < BEGIN_GAME_FOLD_TIMES){
+        return fold;
+    }
+    /*====================两张牌的情况====================*/
+    if(current_game_process == HOLD_CARDS_MSG){
+
+//        //(2)如果当前排名为4以外，且只剩一个疯狗，另外的都是怕死鬼
+//        if(stg->get_seatInfo().get_people_num()){
+//            //看自己的手牌,如果很有把握赢，则跟注
+//        }
+//        else
+//            myAction = all_in;
+
+
+    }
+    /*====================五张牌的情况====================*/
+    if(current_game_process == FLOP_MSG){
+
+    }
+    /*====================六张牌的情况====================*/
+    if(current_game_process == TURN_MSG){
+
+    }
+    /*====================七张牌的情况====================*/
+    if(current_game_process == RIVER_MSG){
+
+    }
+
     return myAction;
 }
 
@@ -96,7 +139,8 @@ void* protocol(void *arg)
 }
 void* strategy(void *arg)
 {
-    Strategy *p = (Strategy *)arg;
+    Player *p = (Player *)arg;
+    p->stg->start_compute();
     return NULL;
 }
 

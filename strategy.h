@@ -25,6 +25,16 @@ public:
     Public_cards& get_publicCards();
     Showdown_result& get_showdownResult();
     Win_allocation& get_winAllocation();
+
+    //开始计算,用于线程函数处
+    void start_compute();
+
+    //通知strategy现在的游戏状态
+    void inform_hold();
+    void inform_flop();
+    void inform_turn();
+    void inform_river();
+
 protected:
     //高牌概率
     float high_card_chance();
@@ -79,7 +89,6 @@ private:
 
 
 private:
-
     Win_allocation winAllocation;
     Showdown_result showdownResult;
     Public_cards publicCards;
@@ -89,6 +98,10 @@ private:
     //为计算"成牌"方便,设置牌型数组,做记号
     unsigned int card_state[4][13];//card array
 
+    bool game_process_hold; //当前游戏进度,指示hold牌计算
+    bool game_process_flop; //当前游戏进度,指示flop牌计算
+    bool game_process_turn; //当前游戏进度,指示turn牌计算
+    bool game_process_river;//当前游戏进度,指示river牌计算
 };
 
 #endif // STRATEGY_H

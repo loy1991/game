@@ -99,21 +99,28 @@ player_action s2player_action(char*s);
 class Seat_info
 {
 public:
-    Seat_info():people_num(0){}
+    Seat_info():_people_num(0){}
+
     int get_pid(int index){return pid[index];}
     int get_jetton(int index){return jetton[index];}
     int get_money(int index){return money[index];}
+
+    //返回当前比赛的人数
+    int get_people_num(){return _people_num;}
     //取得pid对应的index，不存在则返回-1
     int get_index(int id);
 
-    void set_pid(int index, int val){pid[index] = val; people_num++;}
+    void set_pid(int index, int val){pid[index] = val;}
     void set_jetton(int index, int val){jetton[index] = val;}
     void set_money(int index, int val){money[index] = val;}
+
+    //设置当前比赛人数
+    void set_people_num(int val){_people_num = val;}
 private:
     int pid[8];         //玩家ID
     int jetton[8];      //筹码数
     int money[8];       //金币数
-    int people_num;     //指在做比赛的人数
+    int _people_num;    //指当前比赛的人数
 };
 
 /*手牌类*/
@@ -125,9 +132,26 @@ public:
 
     void set_color(int index, card_color val){_color[index] = val;}
     void set_point(int index, card_point val){_point[index] = val;}
+    //计算hold card信息
+    void compute_info();
+    //清空hold card信息
+    void clean_info();
+private:
+    void inline same_color();
+    void inline distance_5();
+    void inline big_card();
+
+
 private:
     card_color _color[2];        //牌的花色
     card_point _point[2];        //牌的点数
+
+public:
+    //两张牌的类型标记和信息
+    bool info_double;      //是对子
+    bool info_distance_5;  //距离是5以内
+    bool info_same_color;  //同样的颜色
+    int  info_big_card_num;//有大牌存在
 };
 
 /*玩家下注状态类*/
@@ -138,9 +162,12 @@ public:
 
     int get_pid(int index){return pid[index];}
     int get_bet(int index){return bet[index];}
+
     //取得pid对应的index，不存在则返回-1
     int get_index(int id);
     int get_totl_pot(){return totl_pot;}
+
+    //取得index处玩家的动作，结合get_index使用
     player_action get_action(int index){return action[index];}
 
 
@@ -199,5 +226,7 @@ private:
     int win_num[8];     //玩家赢取的奖金数额
 
 };
+
+#define BEGIN_GAME_FOLD_TIMES 80    //比赛开始，弃牌的总局数，以便统计对手打牌风格
 
 #endif // ENVIROMENT_H
