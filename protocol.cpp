@@ -325,10 +325,10 @@ bool Protocol::stop_inquire_msg(Player *p, int &index)
             pb->set_pid(count, temp_id);
             word = strtok(NULL," ");
 
-            pi->set_jetton(pi->get_index(temp_id), atoi(word));
+            pi->set_jetton(count, atoi(word));
             word = strtok(NULL," ");
 
-            pi->set_money(pi->get_index(temp_id),atoi(word));
+            pi->set_money(count,atoi(word));
             word = strtok(NULL," ");
 
             pb->set_bet(count, atoi(word));
@@ -338,6 +338,9 @@ bool Protocol::stop_inquire_msg(Player *p, int &index)
             word = strtok(NULL," ");
             count ++;
         }
+        pb->set_player_count(count);//设置当前投注人数
+
+        //令strategy计算出“我”当前需要出的赌注是多少
     }
     return true;
 }

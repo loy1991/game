@@ -83,6 +83,15 @@ int Player_bet::get_index(int id)
     return -1;
 }
 
+int Player_bet::get_now_neet_minbet()
+{
+    for(int i = 0; i < player_count; i++){
+        if(action[i] != fold)
+            return bets[i];
+    }
+    return -1;
+}
+
 /*==============座次信息类==============*/
 int Seat_info::get_index(int id)
 {

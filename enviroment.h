@@ -161,25 +161,32 @@ public:
     Player_bet():player_count(0),totl_pot(0){}
 
     int get_pid(int index){return pid[index];}
-    int get_bet(int index){return bet[index];}
+    int get_bet(int index){return bets[index];}
 
     //取得pid对应的index，不存在则返回-1
     int get_index(int id);
-    int get_totl_pot(){return totl_pot;}
 
     //取得index处玩家的动作，结合get_index使用
     player_action get_action(int index){return action[index];}
 
 
-    void set_pid(int index, int val){pid[index] = val; player_count++;}
-    void set_bet(int index, int val){bet[index] = val;}
+    void set_pid(int index, int val){pid[index] = val; }
+    void set_bet(int index, int val){bets[index] = val;}
     void set_action(int index, player_action val){action[index] = val;}
     void set_totl_pot(int val){totl_pot = val;}
+    void set_player_count(int val){player_count = val;}
+
+    /*面向player使用的用于计算如何出牌的接口*/
+
+    //返回当前需要押注的最小值,出错，返回-1
+    int get_now_neet_minbet();
+    int get_totl_pot(){return totl_pot;}
+
 private:
     int pid[8];                         //玩家ID
-    int bet[8];                         //玩家赌注
+    int bets[8];                         //玩家赌注
     player_action action[8];            //玩家的动作
-    int player_count;                   //指示当前的玩家数
+    int player_count;                   //指示当前的投注玩家数
     int totl_pot;                       //奖池数额
 };
 
