@@ -92,9 +92,9 @@ Strategy *Player::get_strategy()
 //返回经过策略计算的动作
 player_action Player::get_my_action()
 {
-    //(1)弃牌 BEGIN_GAME_FOLD_TIMES 局，避免疯狗，同时
+    //(1)弃牌 CONF_BEGIN_GAME_FOLD_TIMES 局，避免疯狗，同时
     //期间统计选手的打牌风格，统计疯狗和怕死鬼
-    if(current_match_time < BEGIN_GAME_FOLD_TIMES){
+    if(current_match_time < CONF_BEGIN_GAME_FOLD_TIMES){
         return fold;
     }
 
@@ -104,26 +104,51 @@ player_action Player::get_my_action()
     /*====================两张牌的情况====================*/
     if(current_game_process == HOLD_CARDS_MSG){
 
-//        //(2)如果当前排名为4以外，且只剩一个疯狗，另外的都是怕死鬼
-//        if(stg->get_seatInfo().get_people_num()){
-//            //看自己的手牌,如果很有把握赢，则跟注
-//        }
-//        else
-//            myAction = all_in;
+        //“我”能为这次出牌给出的最大赌注
+        int my_loved_bet = 0;
+        //代表小盲注的倍率
+        int extend = 0;
 
+        bool o_double = stg->get_holdCards().info_double;      //是对子
+        bool o_distance_5 = stg->get_holdCards().info_distance_5;  //距离是5以内
+        bool o_same_color = stg->get_holdCards().info_same_color;  //同样的颜色
+        int  o_big_card_num = stg->get_holdCards().info_big_card_num;//有大牌存在
 
+        if(o_big_card_num > 0){
+            extend = extend + 2 + o_big_card_num;
+        }
+        if(o_same_color){
+            extend += 1;
+        }
+        if(o_distance_5){
+            extend += 1;
+        }
+        if(o_double && (o_big_card_num > 0)){   //大对子
+            extend += 4;
+        }
+        if(o_double && (o_big_card_num == 0)){  //小对子
+            extend += 2;
+        }
+
+        my_loved_bet = extend * CONF_SMALL_BLIND;   //可为当前手牌出的最大赌注
+        cout << "player_action Player::get_my_action.extend = " << extend << endl;
+
+        if(need_min_bet > my_loved_bet)
+            return fold;
+        else
+            return check;
     }
     /*====================五张牌的情况====================*/
     if(current_game_process == FLOP_MSG){
-
+        myAction = check;
     }
     /*====================六张牌的情况====================*/
     if(current_game_process == TURN_MSG){
-
+        myAction = check;
     }
     /*====================七张牌的情况====================*/
     if(current_game_process == RIVER_MSG){
-
+        myAction = check;
     }
 
     return myAction;
