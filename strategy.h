@@ -34,6 +34,7 @@ public:
     void inform_flop();
     void inform_turn();
     void inform_river();
+    void inform_gameover();
 
 protected:
     //高牌概率
@@ -102,6 +103,7 @@ private:
     bool game_process_flop; //当前游戏进度,指示flop牌计算
     bool game_process_turn; //当前游戏进度,指示turn牌计算
     bool game_process_river;//当前游戏进度,指示river牌计算
+    bool game_process_gameover;
 };
 
 #endif // STRATEGY_H

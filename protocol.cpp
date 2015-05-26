@@ -99,7 +99,7 @@ void Protocol::process_Msg(char *name)
 
     while(gameStop == false)
     {
-        if ((len = recv(sock_fd, bufRecv, 1000, 0)) != 0) {
+        if ((gameStop == false) && (len = recv(sock_fd, bufRecv, 1000, 0)) != 0) {
             bufRecv[len]='\0';
             cout << "--------------------"<<endl;
             cout << bufRecv <<endl;
@@ -107,55 +107,55 @@ void Protocol::process_Msg(char *name)
 
             index = 0;
 
-            while((pline = read_line_msg(index)) != NULL){
+            while((pline = read_line_msg(index)) != NULL){                
             //=====================进入消息处理阶段=====================
                 if(strcmp("seat/ ",pline) == 0){
                     stat = SEAT_INFO_MSG;
                     player->inform_match_again();
-                    cout << "seat_info-msg" << index << endl;
+                    cout << "seat_info-msg" << endl;
                 }
                 if(strcmp("blind/ ",pline) == 0){
                     stat = BLIND_MSG;
-                    cout << "blind-msg" << index << endl;
+                    cout << "blind-msg" << endl;
                 }
                 if(strcmp("hold/ ",pline) == 0){
                     stat = HOLD_CARDS_MSG;
                     player->inform_game_state(HOLD_CARDS_MSG);//通知player到达手牌状态
-                    cout << "hold-cards-msg" << index << endl;
+                    cout << "hold-cards-msg" << endl;
                 }
                 if(strcmp("inquire/ ",pline) == 0){
                     stat = INQUIRE_MSG;
-                    cout << "inquire-msg" << index << endl;
+                    cout << "inquire-msg" << endl;
                 }
                 if(strcmp("flop/ ",pline) == 0){
                     stat = FLOP_MSG;
                     player->inform_game_state(FLOP_MSG);//通知player到达手牌状态
-                    cout << "flop-msg" << index << endl;
+                    cout << "flop-msg" << endl;
                 }
                 if(strcmp("turn/ ",pline) == 0){
                     stat = TURN_MSG;
                     player->inform_game_state(TURN_MSG);//通知player到达手牌状态
-                    cout << "turn-msg" << index << endl;
+                    cout << "turn-msg" << endl;
                 }
                 if(strcmp("river/ ",pline) == 0){
                     stat = RIVER_MSG;
                     player->inform_game_state(RIVER_MSG);//通知player到达手牌状态
-                    cout << "river-msg" << index << endl;
+                    cout << "river-msg" << endl;
                 }
                 if(strcmp("showdown/ ",pline) == 0){
                     stat = SHOWDOWN_MSG;
 
-                    cout << "showdown-msg" << index << endl;
+                    cout << "showdown-msg" << endl;
                 }
                 if(strcmp("pot-win/ ",pline) == 0){
                     stat = POT_WIN_MSG;
-                    cout << "pot-win-msg" << index << endl;
+                    cout << "pot-win-msg" << endl;
                 }
                 if(strcmp("game-over ",pline) == 0){
                     stat = GAME_OVER_MSG;
-                    cout << "game-over-msg" << index << endl;
+                    cout << "game-over-msg" << endl;
                 }
-                    cout << "same_as_upper" << endl;
+
                 switch(stat)
                 {
                     case(SEAT_INFO_MSG):stop_seat_info_msg(player,index);break;
@@ -169,7 +169,6 @@ void Protocol::process_Msg(char *name)
                     case(POT_WIN_MSG):stop_pot_win_msg(player, index);break;
                     case(GAME_OVER_MSG):stop_game_over_msg(0);break;
                 }
-
             }
         }
     }
@@ -228,6 +227,8 @@ bool Protocol::stop_seat_info_msg(Player *p, int &index)
 bool Protocol::stop_game_over_msg(Player *p)
 {
     gameStop = true;
+    close(sock_fd);
+    player->get_strategy()->inform_gameover();//通知strategy游戏结束
     return true;
 }
 

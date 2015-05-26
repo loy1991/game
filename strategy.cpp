@@ -10,6 +10,7 @@ Strategy::Strategy()
     game_process_flop = false;
     game_process_turn = false;
     game_process_river = false;
+    game_process_gameover = false;
 }
 
 card_result Strategy::what_card_result()
@@ -246,7 +247,7 @@ Win_allocation &Strategy::get_winAllocation()
 
 void Strategy::start_compute()
 {
-    while(1){
+    while(!game_process_gameover){
         if(game_process_hold | game_process_flop){
 
             if(game_process_hold){//hold牌计算
@@ -287,6 +288,11 @@ void Strategy::inform_turn()
 void Strategy::inform_river()
 {
     game_process_river = true;
+}
+
+void Strategy::inform_gameover()
+{
+    game_process_gameover = true;
 }
 
 int Strategy::max_succession(const unsigned int *arry, int len, int &index) const

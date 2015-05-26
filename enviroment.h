@@ -184,7 +184,7 @@ public:
 
 private:
     int pid[8];                         //玩家ID
-    int bets[8];                         //玩家赌注
+    int bets[8];                        //玩家赌注
     player_action action[8];            //玩家的动作
     int player_count;                   //指示当前的投注玩家数
     int totl_pot;                       //奖池数额

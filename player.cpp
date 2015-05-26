@@ -92,11 +92,15 @@ Strategy *Player::get_strategy()
 //返回经过策略计算的动作
 player_action Player::get_my_action()
 {
-    //(1)弃牌 BEGIN_GAME_FOLD_TIMES 局，
+    //(1)弃牌 BEGIN_GAME_FOLD_TIMES 局，避免疯狗，同时
     //期间统计选手的打牌风格，统计疯狗和怕死鬼
     if(current_match_time < BEGIN_GAME_FOLD_TIMES){
         return fold;
     }
+
+    //计算出这次需要押进去的最小赌注数
+    int need_min_bet = stg->get_playerBet().get_now_neet_minbet();
+
     /*====================两张牌的情况====================*/
     if(current_game_process == HOLD_CARDS_MSG){
 
