@@ -132,10 +132,18 @@ void Hold_cards::big_card()
 
 void Hold_cards::compute_info()
 {
+    BL_Lock bl(&info_mutex);
+
     clean_info();
     same_color();
     distance_5();
     big_card();
+
+    cout << "d "<< info_double << "\t";      //是对子
+    cout << "d5 "<< info_distance_5 << "\t";  //距离是5以内
+    cout <<"s "<< info_same_color << "\t";  //同样的颜色
+    cout << "b "<< info_big_card_num << endl;//有大牌存在
+
 }
 
 void Hold_cards::clean_info()

@@ -10,11 +10,13 @@ SOURCES += main.cpp \
     protocol.cpp \
     strategy.cpp \
     player.cpp \
-    enviroment.cpp
+    enviroment.cpp \
+    bl_mutex.cpp
 
 HEADERS += \
     protocol.h \
     strategy.h \
     player.h \
-    enviroment.h
+    enviroment.h \
+    bl_mutex.h
 

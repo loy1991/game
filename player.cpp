@@ -109,6 +109,8 @@ player_action Player::get_my_action()
         //代表小盲注的倍率
         int extend = 0;
 
+        stg->get_holdCards().can_use_compute_info();//这个函数通过，证明计算完成以下info均可用
+
         bool o_double = stg->get_holdCards().info_double;      //是对子
         bool o_distance_5 = stg->get_holdCards().info_distance_5;  //距离是5以内
         bool o_same_color = stg->get_holdCards().info_same_color;  //同样的颜色

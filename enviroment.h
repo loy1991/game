@@ -1,6 +1,8 @@
 #ifndef ENVIROMENT_H
 #define ENVIROMENT_H
 
+#include "bl_mutex.h"
+
 //德州扑克基本术语
 enum basic_term
 {
@@ -132,11 +134,17 @@ public:
 
     void set_color(int index, card_color val){_color[index] = val;}
     void set_point(int index, card_point val){_point[index] = val;}
-    //计算hold card信息
+
+    //计算hold card信息，供strategy线程计算使用
     void compute_info();
+    //当要使用hold card信息前，先调用此函数
+    void can_use_compute_info(){BL_Lock bl(&info_mutex);}
+
     //清空hold card信息
     void clean_info();
+
 private:
+    //计算牌的特征
     void inline same_color();
     void inline distance_5();
     void inline big_card();
@@ -147,11 +155,14 @@ private:
     card_point _point[2];        //牌的点数
 
 public:
-    //两张牌的类型标记和信息
+    //hold card的类型标记和信息
     bool info_double;      //是对子
     bool info_distance_5;  //距离是5以内
     bool info_same_color;  //同样的颜色
     int  info_big_card_num;//有大牌存在
+private:
+
+    BL_Mutex info_mutex;//计算信息时的互斥量
 };
 
 /*玩家下注状态类*/
