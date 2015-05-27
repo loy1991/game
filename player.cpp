@@ -115,10 +115,8 @@ player_action Player::get_my_action()
         bool o_distance_5 = stg->get_holdCards().info_distance_5;  //距离是5以内
         bool o_same_color = stg->get_holdCards().info_same_color;  //同样的颜色
         int  o_big_card_num = stg->get_holdCards().info_big_card_num;//有大牌存在
-
-        if(o_big_card_num > 0){
-            extend = extend + 2 + o_big_card_num;
-        }
+        //大牌型统计
+        extend = extend + 2 + o_big_card_num;
         if(o_same_color){
             extend += 1;
         }
