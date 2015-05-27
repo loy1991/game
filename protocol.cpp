@@ -293,6 +293,7 @@ bool Protocol::stop_hold_cards_msg(Player *p, int &index)
     }
     player->get_strategy()->inform_hold();
     player->get_strategy()->get_holdCards().compute_info();//将计算Hold牌的牌型放到此处，保证在inquire消息前执行完毕
+    player->get_strategy()->compute_STYLE_holdCards();
     return true;
 }
 
@@ -407,6 +408,7 @@ bool Protocol::stop_flop_msg(Player *p, int &index)
         }
     }
     player->get_strategy()->inform_flop();
+    player->get_strategy()->compute_STYLE_flopCards();
     return true;
 }
 
@@ -438,6 +440,7 @@ bool Protocol::stop_turn_msg(Player *p, int &index)
         }
     }
     player->get_strategy()->inform_turn();
+    player->get_strategy()->compute_STYLE_turnCards();
     return true;
 }
 
@@ -468,6 +471,7 @@ bool Protocol::stop_river_msg(Player *p, int &index)
         }
     }
     player->get_strategy()->inform_river();
+    player->get_strategy()->compute_STYLE_holdCards();
     return true;
 }
 

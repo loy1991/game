@@ -140,6 +140,7 @@ player_action Player::get_my_action()
     }
     /*====================五张牌的情况====================*/
     if(current_game_process == FLOP_MSG){
+
         myAction = check;
     }
     /*====================六张牌的情况====================*/

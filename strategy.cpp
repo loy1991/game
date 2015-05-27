@@ -292,6 +292,76 @@ void Strategy::inform_gameover()
     game_process_gameover = true;
 }
 
+void Strategy::compute_STYLE_holdCards()
+{
+    if(this->holdCards.info_double == true)
+        STYLE_holdCards = ONE_PAIR;
+    else
+        STYLE_holdCards = HIGH_CARD;
+}
+
+void Strategy::compute_STYLE_flopCards()
+{
+    clean_card_state();
+    //令各个牌分别进入cardstate
+    for(int i = 0; i < 3; i++){
+        int c = publicCards.get_color(i) - SPADES;
+        int p = publicCards.get_point(i) - TWO;
+        card_state[c][p] = 1;
+    }
+
+    STYLE_flopCards = largest_style();
+
+    for(int i = 0; i < 2; i++){
+        int c = holdCards.get_color(i) - SPADES;
+        int p = holdCards.get_point(i) - TWO;
+        card_state[c][p] = 1;
+    }
+
+    STYLE_5Cards = largest_style();
+}
+
+void Strategy::compute_STYLE_turnCards()
+{
+    clean_card_state();
+    //令各个牌分别进入cardstate
+    for(int i = 0; i < 4; i++){
+        int c = publicCards.get_color(i) - SPADES;
+        int p = publicCards.get_point(i) - TWO;
+        card_state[c][p] = 1;
+    }
+
+    STYLE_turnCards = largest_style();
+
+    for(int i = 0; i < 2; i++){
+        int c = holdCards.get_color(i) - SPADES;
+        int p = holdCards.get_point(i) - TWO;
+        card_state[c][p] = 1;
+    }
+
+    STYLE_6Cards = largest_style();
+}
+
+void Strategy::compute_STYLE_riverCards()
+{
+    clean_card_state();
+    //令各个牌分别进入cardstate
+    for(int i = 0; i < 5; i++){
+        int c = publicCards.get_color(i) - SPADES;
+        int p = publicCards.get_point(i) - TWO;
+        card_state[c][p] = 1;
+    }
+
+    STYLE_riverCards = largest_style();
+
+    for(int i = 0; i < 2; i++){
+        int c = holdCards.get_color(i) - SPADES;
+        int p = holdCards.get_point(i) - TWO;
+        card_state[c][p] = 1;
+    }
+    STYLE_7Cards = largest_style();
+}
+
 int Strategy::max_succession(const unsigned int *arry, int len, int &index) const
 {
     int max_len = -1;
@@ -312,5 +382,38 @@ int Strategy::max_succession(const unsigned int *arry, int len, int &index) cons
 
     index = max_len_index;
     return max_len;
+}
+
+void Strategy::clean_card_state()
+{
+    for(int i = 0; i < 4; i++){
+        for(int j = 0; j < 13; j++){
+            card_state[i][j] = 0;
+        }
+    }
+}
+
+card_result Strategy::largest_style()
+{
+    card_result result;
+    if(is_high_card())
+        result = HIGH_CARD;
+    if(is_one_pair())
+        result = ONE_PAIR;
+    if(is_two_pair())
+        result = TWO_PAIR;
+    if(is_three_of_a_kind())
+        result = THREE_OF_A_KIND;
+    if(is_straight())
+        result = STRAIGHT;
+    if(is_flush())
+        result = FLUSH;
+    if(is_full_house())
+        result = FULL_HOUSE;
+    if(is_four_of_a_kind())
+        result = FOUR_OF_A_KIND;
+    if(is_straight_flush())
+        result = STRAIGHT_FLUSH;
+    return result;
 }
 

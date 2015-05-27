@@ -36,44 +36,49 @@ public:
     void inform_river();
     void inform_gameover();
 
+
+    //计算不同游戏进程中，牌型的变化
+    void compute_STYLE_holdCards();
+    void compute_STYLE_flopCards();
+    void compute_STYLE_turnCards();
+    void compute_STYLE_riverCards();
+
 protected:
     //高牌概率
     float high_card_chance();
-    bool is_high_card();
+    inline bool is_high_card();
 
     //一对概率
     float one_pair_chance();
-    bool is_one_pair() const;
+    inline bool is_one_pair() const;
 
     //两对概率
     float two_pair_chance();
-    bool is_two_pair() const;
+    inline bool is_two_pair() const;
 
     //三条概率
     float three_of_a_kind_chance();
-    bool is_three_of_a_kind() const;
+    inline bool is_three_of_a_kind() const;
 
     //顺子概率
     float straight_chance();
-    bool is_straight() const;
+    inline bool is_straight() const;
 
     //同花概率
     float flush_chance();
-    bool is_flush() const;
+    inline bool is_flush() const;
 
     //葫芦概率
     float full_house_chance();
-    bool is_full_house() const;
+    inline bool is_full_house() const;
 
     //四条概率
     float four_of_a_kind_chance();
-    bool is_four_of_a_kind() const;
+    inline bool is_four_of_a_kind() const;
 
     //同花顺概率
     float straight_flush_chance();
-    bool is_straight_flush() const;
-
-
+    inline bool is_straight_flush() const;
 
 
 private:
@@ -88,6 +93,9 @@ private:
     */
     int max_succession(const unsigned int *arry, int len, int &index) const;
 
+    //清空card_state中的标记
+    void clean_card_state();
+    card_result largest_style();
 
 private:
     Win_allocation winAllocation;
@@ -96,6 +104,7 @@ private:
     Player_bet playerBet;
     Hold_cards holdCards;
     Seat_info seatInfo;
+
     //为计算"成牌"方便,设置牌型数组,做记号
     unsigned int card_state[4][13];//card array
 
@@ -104,6 +113,16 @@ private:
     bool game_process_turn; //当前游戏进度,指示turn牌计算
     bool game_process_river;//当前游戏进度,指示river牌计算
     bool game_process_gameover;
+
+public:
+    //用来记录此次游戏进度下的牌型记录
+    card_result STYLE_holdCards;
+    card_result STYLE_flopCards;
+    card_result STYLE_5Cards;
+    card_result STYLE_turnCards;
+    card_result STYLE_6Cards;
+    card_result STYLE_riverCards;
+    card_result STYLE_7Cards;
 };
 
 #endif // STRATEGY_H

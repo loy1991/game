@@ -245,7 +245,7 @@ private:
 
 };
 
-#define CONF_BEGIN_GAME_FOLD_TIMES 80    //比赛开始，弃牌的总局数，以便统计对手打牌风格
+#define CONF_BEGIN_GAME_FOLD_TIMES 0    //比赛开始，弃牌的总局数，以便统计对手打牌风格
 #define CONF_BIG_BLIND  40               //大盲注
 #define CONF_SMALL_BLIND 20              //小盲注
 
