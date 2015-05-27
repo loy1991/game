@@ -131,7 +131,7 @@ player_action Player::get_my_action()
         }
 
         my_loved_bet = extend * CONF_SMALL_BLIND;   //可为当前手牌出的最大赌注
-        cout << "player_action Player::get_my_action.extend = " << extend << endl;
+        my_bet = my_loved_bet;
 
         if(need_min_bet > my_loved_bet)
             return fold;
@@ -140,15 +140,94 @@ player_action Player::get_my_action()
     }
     /*====================五张牌的情况====================*/
     if(current_game_process == FLOP_MSG){
+        int my_loved_bet5 = 0;
+        int extend5 = 0;
 
-        myAction = check;
+        if(stg->STYLE_flopCards == stg->STYLE_5Cards){//牌型未升级
+            if(stg->get_holdCards().info_double || stg->get_holdCards().info_big_card_num == 2){
+            //如果有一对手牌，或者有两个大牌，则加一个大忙注
+                extend5 += 1;
+            }
+            if(stg->get_holdCards().info_double && stg->get_holdCards().info_big_card_num == 2){
+            //如果有一对手牌且是两个大牌，则再一个大忙注
+                extend5 += 1;
+            }
+            else{//否则直接弃掉
+                return fold;
+            }
+        }else{//牌型有升级
+            if(stg->get_holdCards().info_double || stg->get_holdCards().info_big_card_num == 2){
+            //如果有一对手牌，或者有两个大牌，则加一个大忙注
+                extend5 += 2;
+            }
+            if(stg->get_holdCards().info_double && stg->get_holdCards().info_big_card_num == 2){
+            //如果有一对手牌且是两个大牌，则再一个大忙注
+                extend5 += 2;
+            }
+        }
+
+        my_loved_bet5 = my_bet + extend5 * CONF_BIG_BLIND;
+        my_bet = my_loved_bet5;
+
+        if(stg->STYLE_5Cards > FLUSH){//如果牌型果真很好，则加注
+            return raise;
+        }
+
+        if(need_min_bet > my_loved_bet5)
+            return fold;
+        else
+            return check;
     }
     /*====================六张牌的情况====================*/
     if(current_game_process == TURN_MSG){
-        myAction = check;
+        int my_loved_bet6 = 0;
+        int extend6 = 0;
+
+        if(stg->STYLE_turnCards == stg->STYLE_6Cards){//牌型未升级
+            if(stg->get_holdCards().info_double || stg->get_holdCards().info_big_card_num == 2){
+            //如果有一对手牌，或者有两个大牌，则加一个大忙注
+                extend6 += 1;
+            }
+            if(stg->get_holdCards().info_double && stg->get_holdCards().info_big_card_num == 2){
+            //如果有一对手牌且是两个大牌，则再一个大忙注
+                extend6 += 1;
+            }
+        }else{//牌型有升级
+            if(stg->STYLE_5Cards == stg->STYLE_6Cards){//5张到六张无升级，测试目前牌型
+                if(stg->STYLE_6Cards == ONE_PAIR)
+                    extend6 += 1;
+                if(stg->STYLE_6Cards == TWO_PAIR)
+                    extend6 += 4;
+                if(stg->STYLE_6Cards == THREE_OF_A_KIND)
+                    extend6 += 8;
+                if(stg->STYLE_6Cards == STRAIGHT)
+                    extend6 += 12;
+                if(stg->STYLE_6Cards > STRAIGHT)
+                    return check;
+            }else{//5张到六张有升级，则极好
+
+                if(stg->STYLE_6Cards == TWO_PAIR)
+                    extend6 += 4;
+                if(stg->STYLE_6Cards == THREE_OF_A_KIND)
+                    extend6 += 8;
+                if(stg->STYLE_6Cards == STRAIGHT)
+                    extend6 += 12;
+                if(stg->STYLE_6Cards > STRAIGHT)
+                    return check;
+            }
+        }
+
+        my_loved_bet6 = my_bet + extend6 * CONF_BIG_BLIND;
+        my_bet = my_loved_bet6;
+
+        if(need_min_bet > my_loved_bet6)
+            return fold;
+        else
+            return check;
     }
     /*====================七张牌的情况====================*/
     if(current_game_process == RIVER_MSG){
+        //这种情况下，就一种判别，跟上！
         myAction = check;
     }
 

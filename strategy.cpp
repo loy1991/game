@@ -248,7 +248,7 @@ Win_allocation &Strategy::get_winAllocation()
 void Strategy::start_compute()
 {
     while(!game_process_gameover){
-        if(game_process_hold | game_process_flop){
+        if(game_process_hold || game_process_flop){
 
             if(game_process_hold){//hold牌计算
                 game_process_hold = false;  //计算完之后修改状态
