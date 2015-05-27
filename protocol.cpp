@@ -292,6 +292,7 @@ bool Protocol::stop_hold_cards_msg(Player *p, int &index)
         }
     }
     player->get_strategy()->inform_hold();
+    player->get_strategy()->get_holdCards().compute_info();//将计算Hold牌的牌型放到此处，保证在inquire消息前执行完毕
     return true;
 }
 

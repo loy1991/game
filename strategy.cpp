@@ -251,10 +251,7 @@ void Strategy::start_compute()
         if(game_process_hold | game_process_flop){
 
             if(game_process_hold){//hold牌计算
-
-                this->holdCards.compute_info();
                 game_process_hold = false;  //计算完之后修改状态
-                cout << "strategy::start_compute_holdCards.compute_info()" << endl;
             }
             if(game_process_flop){//flop牌计算
                 game_process_flop = false;  //计算完之后修改状态
