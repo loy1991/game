@@ -53,7 +53,7 @@ public:
     //返回玩家的动作以便协议发送
     player_action get_my_action();
     //返回玩家准备加的注
-    int get_my_bet();
+    int get_my_raise();
 
     //获得player的策略实例
     Strategy *get_strategy();
@@ -64,7 +64,8 @@ private:
     int my_jetton;  //我的筹码
 
     player_action myAction;//我的行动
-    int my_bet;     //我的赌注
+    int my_bet;     //此刻我愿意压进的赌注
+    int my_raise;   //raise发送的赌注
 
 
     player_action lPAction;   //上家的行动

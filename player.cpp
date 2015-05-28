@@ -25,11 +25,12 @@ Player::Player(const char *SerIp, int SerPt, const char *MyIp, int MyPt, int pid
 
     my_money = 0;   //我的金钱
     my_jetton = 0;  //我的筹码
-
+    my_raise = 0;   //raise发送的赌注
     _name = name;
 
     current_game_process = GAME_STATE_UN_KNOW;
     current_match_time = 0;
+
 }
 
 Player::~Player()
@@ -152,7 +153,8 @@ player_action Player::get_my_action()
             //如果有一对手牌且是两个大牌，则再一个大忙注
                 extend5 += 1;
             }
-            else{//否则直接弃掉
+            if(!(stg->get_holdCards().info_double) && (stg->get_holdCards().info_big_card_num == 0)){//否则直接弃掉
+            //如果没有一对，且没有一张大牌
                 return fold;
             }
         }else{//牌型有升级
@@ -227,16 +229,35 @@ player_action Player::get_my_action()
     }
     /*====================七张牌的情况====================*/
     if(current_game_process == RIVER_MSG){
+        static int i = 1;
+        i++;
+        my_raise = 0;
         //这种情况下，就一种判别，跟上！
+        if(stg->STYLE_7Cards >= FULL_HOUSE){
+            my_raise += 100;
+        }
+        if(stg->STYLE_7Cards >= FOUR_OF_A_KIND){
+            my_raise += 500;
+        }
+        if(stg->STYLE_7Cards >=STRAIGHT_FLUSH){
+            my_raise += 1000;
+        }
+
+        if(my_raise > 0){
+            cout << "-----------"<< i << "-----------" << endl;
+            cout << "action raise" << my_raise << endl;
+            return raise;
+
+        }
         myAction = check;
     }
 
     return myAction;
 }
 
-int Player::get_my_bet()
+int Player::get_my_raise()
 {
-    return my_bet;
+    return my_raise;
 }
 
 void* protocol(void *arg)
@@ -249,7 +270,7 @@ void* protocol(void *arg)
 void* strategy(void *arg)
 {
     Player *p = (Player *)arg;
-    p->stg->start_compute();
+    //p->stg->start_compute();
     return NULL;
 }
 

@@ -80,7 +80,7 @@ int Protocol::startTcp()
 //        cout << "connect() error!" << endl;
 //        cout << strerror(errno) << endl;
 //        cout.flush();
-        usleep(5000);
+          usleep(5000);
     }
     return sock_fd;
 }
@@ -101,9 +101,9 @@ void Protocol::process_Msg(char *name)
     {
         if ((gameStop == false) && (len = recv(sock_fd, bufRecv, 1000, 0)) != 0) {
             bufRecv[len]='\0';
-            cout << "--------------------"<<endl;
-            cout << bufRecv <<endl;
-            cout << "--------------------"<<endl;
+//            cout << "--------------------"<<endl;
+//            cout << bufRecv <<endl;
+//            cout << "--------------------"<<endl;
 
             index = 0;
 
@@ -112,48 +112,48 @@ void Protocol::process_Msg(char *name)
                 if(strcmp("seat/ ",pline) == 0){
                     stat = SEAT_INFO_MSG;
                     player->inform_match_again();
-                    cout << "seat_info-msg" << endl;
+                    //cout << "seat_info-msg" << endl;
                 }
                 if(strcmp("blind/ ",pline) == 0){
                     stat = BLIND_MSG;
-                    cout << "blind-msg" << endl;
+                    //cout << "blind-msg" << endl;
                 }
                 if(strcmp("hold/ ",pline) == 0){
                     stat = HOLD_CARDS_MSG;
                     player->inform_game_state(HOLD_CARDS_MSG);//通知player到达手牌状态
-                    cout << "hold-cards-msg" << endl;
+                    //cout << "hold-cards-msg" << endl;
                 }
                 if(strcmp("inquire/ ",pline) == 0){
                     stat = INQUIRE_MSG;
-                    cout << "inquire-msg" << endl;
+                    //cout << "inquire-msg" << endl;
                 }
                 if(strcmp("flop/ ",pline) == 0){
                     stat = FLOP_MSG;
                     player->inform_game_state(FLOP_MSG);//通知player到达手牌状态
-                    cout << "flop-msg" << endl;
+                    //cout << "flop-msg" << endl;
                 }
                 if(strcmp("turn/ ",pline) == 0){
                     stat = TURN_MSG;
                     player->inform_game_state(TURN_MSG);//通知player到达手牌状态
-                    cout << "turn-msg" << endl;
+                    //cout << "turn-msg" << endl;
                 }
                 if(strcmp("river/ ",pline) == 0){
                     stat = RIVER_MSG;
                     player->inform_game_state(RIVER_MSG);//通知player到达手牌状态
-                    cout << "river-msg" << endl;
+                    //cout << "river-msg" << endl;
                 }
                 if(strcmp("showdown/ ",pline) == 0){
                     stat = SHOWDOWN_MSG;
 
-                    cout << "showdown-msg" << endl;
+                    //cout << "showdown-msg" << endl;
                 }
                 if(strcmp("pot-win/ ",pline) == 0){
                     stat = POT_WIN_MSG;
-                    cout << "pot-win-msg" << endl;
+                    //cout << "pot-win-msg" << endl;
                 }
                 if(strcmp("game-over ",pline) == 0){
                     stat = GAME_OVER_MSG;
-                    cout << "game-over-msg" << endl;
+                    //cout << "game-over-msg" << endl;
                 }
 
                 switch(stat)
@@ -369,7 +369,7 @@ bool Protocol::ptos_action_msg(Player *p)
         sprintf(bufSend,"%s \n", "all_in");
 
     if( pl_act == raise)//加注
-        sprintf(bufSend,"%s %d \n", "call", p->get_my_bet());
+        sprintf(bufSend,"%s %d \n", "raise", p->get_my_raise());
 
     if((send(sock_fd, bufSend, strlen(bufSend)+1,0)) == -1){
         cout << "Protocol::ptos_action_msg() error!" << endl;
@@ -471,7 +471,7 @@ bool Protocol::stop_river_msg(Player *p, int &index)
         }
     }
     player->get_strategy()->inform_river();
-    player->get_strategy()->compute_STYLE_holdCards();
+    player->get_strategy()->compute_STYLE_riverCards();
     return true;
 }
 

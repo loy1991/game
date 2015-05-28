@@ -47,14 +47,12 @@ class BL_Lock
     {
       if ( _lpMutex )
         _lpMutex->lock();
-      std::cout << "BL_Lock" << std::endl;
     }
     ~BL_Lock()
     {
       if ( _lpMutex )
       {
         _lpMutex->unlock();
-        std::cout << "~BL_Lock" << std::endl;
       }
     }
   private:
