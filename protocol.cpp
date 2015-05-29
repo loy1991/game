@@ -169,7 +169,8 @@ void Protocol::process_Msg(char *name)
                     case(RIVER_MSG):stop_river_msg(player, index);break;
                     case(SHOWDOWN_MSG):stop_showdown_msg(player, index);break;
                     case(POT_WIN_MSG):stop_pot_win_msg(player, index);break;
-                    case(GAME_OVER_MSG):stop_game_over_msg(0);break;
+                    case(GAME_OVER_MSG):stop_game_over_msg(player);break;
+                    default:break;
                 }
             }
         }
@@ -230,7 +231,7 @@ bool Protocol::stop_game_over_msg(Player *p)
 {
     gameStop = true;
     close(sock_fd);
-    player->get_strategy()->inform_gameover();//通知strategy游戏结束
+    p->get_strategy()->inform_gameover();//通知strategy游戏结束
     return true;
 }
 

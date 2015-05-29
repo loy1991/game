@@ -53,10 +53,6 @@ card_color s2card_color(char*s)
     if(strcmp("HEARTS",s) == 0) return HEARTS;//红桃
     if(strcmp("CLUBS",s) == 0) return CLUBS;//梅花
     if(strcmp("DIAMONDS",s) == 0) return DIAMONDS;//方片
-//    else{
-//        cout << "wrong card_color" << endl;
-//        return -1;
-//    }
 }
 
 /*==============从字符串到 player_action 转换==============*/

@@ -13,15 +13,11 @@ Strategy::Strategy()
     game_process_gameover = false;
 }
 
-card_result Strategy::what_card_result()
-{
-    //if(publicCards.get_card_num() >=3)
-}
 
 //高牌概率,其实这个计算大可不必
 float Strategy::high_card_chance()
 {
-
+    return 0.5015;
 }
 bool Strategy::is_high_card()
 {
@@ -35,7 +31,7 @@ bool Strategy::is_high_card()
 //一对概率
 float Strategy::one_pair_chance()
 {
-
+    return 0.4225;
 }
 bool Strategy::is_one_pair() const
 {
@@ -61,7 +57,7 @@ bool Strategy::is_one_pair() const
 //两对概率
 float Strategy::two_pair_chance()
 {
-
+    return 0.0475;
 }
 bool Strategy::is_two_pair() const
 {
@@ -87,7 +83,7 @@ bool Strategy::is_two_pair() const
 //三条概率
 float Strategy::three_of_a_kind_chance()
 {
-
+    return 0.0211;
 }
 bool Strategy::is_three_of_a_kind() const
 {
@@ -109,7 +105,7 @@ bool Strategy::is_three_of_a_kind() const
 //顺子概率
 float Strategy::straight_chance()
 {
-
+    return 0.0035;
 }
 bool Strategy::is_straight() const
 {
@@ -131,7 +127,7 @@ bool Strategy::is_straight() const
 //同花概率
 float Strategy::flush_chance()
 {
-
+    return 0.00198;
 }
 bool Strategy::is_flush() const
 {
@@ -151,7 +147,7 @@ bool Strategy::is_flush() const
 //葫芦概率
 float Strategy::full_house_chance()
 {
-
+    return 0.00144;
 }
 bool Strategy::is_full_house() const
 {
@@ -180,7 +176,7 @@ bool Strategy::is_full_house() const
 //四条概率
 float Strategy::four_of_a_kind_chance()
 {
-
+    return 0.00024;
 }
 bool Strategy::is_four_of_a_kind()const
 {
@@ -202,7 +198,7 @@ bool Strategy::is_four_of_a_kind()const
 //同花顺概率
 float Strategy::straight_flush_chance()
 {
-
+    return 0.00001;
 }
 bool Strategy::is_straight_flush()const
 {

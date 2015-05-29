@@ -9,15 +9,6 @@ class Strategy
 public:
     Strategy();
 
-    /*功能：
-          供player询问此时“我”的成牌情况，三张以上的公牌时候可以查寻
-      参数：
-        空
-      返回值：
-          返回成牌的情况
-    */
-    card_result what_card_result();
-
     //返回策略保存情报的单元
     Seat_info& get_seatInfo();
     Player_bet& get_playerBet();
