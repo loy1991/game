@@ -119,10 +119,10 @@ player_action Player::get_my_action()
         bool o_distance_5 = stg->get_holdCards().info_distance_5;  //距离是5以内
         bool o_same_color = stg->get_holdCards().info_same_color;  //同样的颜色
         int  o_big_card_num = stg->get_holdCards().info_big_card_num;//有大牌存在
-
+        cout << current_match_time << "Hand,my_turn_blind:"<< my_turn_blind << endl;
         if(my_turn_blind < 0){//说明不是我的盲注期间
             if((o_big_card_num == 0) && !o_double){//两个小牌
-
+                cout << current_match_time << "Hand, flod action " << endl;
                 return fold;
             }
         }
@@ -184,7 +184,7 @@ player_action Player::get_my_action()
             my_loved_bet5 = my_bet + extend5 * CONF_BIG_BLIND;
             my_bet = my_loved_bet5;
         }
-        cout << "FLOP_MSG.my_loved_bet = " << my_bet << endl;
+        //cout << "FLOP_MSG.my_loved_bet = " << my_bet << endl;
 
 
         //如果不是以同一状态第二次进入这个分支，则对其置0

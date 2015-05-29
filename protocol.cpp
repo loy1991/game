@@ -263,10 +263,14 @@ bool Protocol::stop_blind_msg(Player *p, int &index)
         }
         pb->set_player_count(count);
     }
+
     //设置了player的my_turn_blind，其实不该在这里设置，但是着急赶活啦
     int mon;
     if((mon = pb->get_bet_of_pid(_pid)) > 0){
         player->set_my_turn_blind(mon);
+    }
+    else{
+        player->set_my_turn_blind(0);
     }
 
     return true;
