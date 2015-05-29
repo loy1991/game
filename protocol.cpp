@@ -116,6 +116,7 @@ void Protocol::process_Msg(char *name)
                 }
                 if(strcmp("blind/ ",pline) == 0){
                     stat = BLIND_MSG;
+                    player->inform_game_state(BLIND_MSG);//通知player到达手牌状态
                     //cout << "blind-msg" << endl;
                 }
                 if(strcmp("hold/ ",pline) == 0){

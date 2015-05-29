@@ -68,6 +68,9 @@ private:
     int my_raise;   //raise发送的赌注
 
 
+    int old_need_min_bet;  //上一轮最小需要压进的赌注
+
+
     player_action lPAction;   //上家的行动
 
     Protocol *pro;   //代表协议通信
@@ -81,6 +84,8 @@ private:
     pthread_t thread_stg;
 
     game_state current_game_process;//当前游戏进度
+    game_state last_game_process;   //上一次游戏进度
+
     int current_match_time;//代表当前比赛的局数
 
 public:

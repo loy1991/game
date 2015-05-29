@@ -28,7 +28,10 @@ Player::Player(const char *SerIp, int SerPt, const char *MyIp, int MyPt, int pid
     my_raise = 0;   //raise发送的赌注
     _name = name;
 
+    old_need_min_bet = 0;
+
     current_game_process = GAME_STATE_UN_KNOW;
+    last_game_process = GAME_STATE_UN_KNOW;
     current_match_time = 0;
 
 }
@@ -105,6 +108,7 @@ player_action Player::get_my_action()
     /*====================两张牌的情况====================*/
     if(current_game_process == HOLD_CARDS_MSG){
 
+
         //“我”能为这次出牌给出的最大赌注
         int my_loved_bet = 0;
         //代表小盲注的倍率
@@ -116,6 +120,7 @@ player_action Player::get_my_action()
         bool o_distance_5 = stg->get_holdCards().info_distance_5;  //距离是5以内
         bool o_same_color = stg->get_holdCards().info_same_color;  //同样的颜色
         int  o_big_card_num = stg->get_holdCards().info_big_card_num;//有大牌存在
+
         //大牌型统计
         extend = extend + 2 + o_big_card_num;
         if(o_same_color){
@@ -134,7 +139,7 @@ player_action Player::get_my_action()
         my_loved_bet = extend * CONF_SMALL_BLIND;   //可为当前手牌出的最大赌注
         my_bet = my_loved_bet;
 
-        if(need_min_bet > my_loved_bet)
+        if(need_min_bet > my_bet)
             return fold;
         else
             return check;
@@ -155,7 +160,8 @@ player_action Player::get_my_action()
             }
             if(!(stg->get_holdCards().info_double) && (stg->get_holdCards().info_big_card_num == 0)){//否则直接弃掉
             //如果没有一对，且没有一张大牌
-                return fold;
+                if(old_need_min_bet != need_min_bet)//如果需要加入新注则弃掉
+                    return fold;
             }
         }else{//牌型有升级
             if(stg->get_holdCards().info_double || stg->get_holdCards().info_big_card_num == 2){
@@ -167,15 +173,26 @@ player_action Player::get_my_action()
                 extend5 += 2;
             }
         }
+        //如果游戏状态有过变化,才计算。为了避免同一个状态中，my_bet一直累加
+        if(current_game_process != last_game_process){
+            my_loved_bet5 = my_bet + extend5 * CONF_BIG_BLIND;
+            my_bet = my_loved_bet5;
+        }
+        cout << "FLOP_MSG.my_loved_bet = " << my_bet << endl;
 
-        my_loved_bet5 = my_bet + extend5 * CONF_BIG_BLIND;
-        my_bet = my_loved_bet5;
-
+        int raise_count = 0;
         if(stg->STYLE_5Cards > FLUSH){//如果牌型果真很好，则加注
-            return raise;
+            raise_count++;
+            if(raise_count < CONF_RAISE_COUNT){//加到CONF_RAISE_COUNT次，
+                my_raise = 1;
+                return raise;
+            }
+            else{
+                return check;
+            }
         }
 
-        if(need_min_bet > my_loved_bet5)
+        if(need_min_bet > my_bet)
             return fold;
         else
             return check;
@@ -218,19 +235,20 @@ player_action Player::get_my_action()
                     return check;
             }
         }
+        //如果游戏状态有过变化,为了避免同一个状态中，my_bet一直累加
+        if(current_game_process != last_game_process){
+            my_loved_bet6 = my_bet + extend6 * CONF_BIG_BLIND;
+            my_bet = my_loved_bet6;
+        }
 
-        my_loved_bet6 = my_bet + extend6 * CONF_BIG_BLIND;
-        my_bet = my_loved_bet6;
-
-        if(need_min_bet > my_loved_bet6)
+        if(need_min_bet > my_bet)
             return fold;
         else
             return check;
     }
     /*====================七张牌的情况====================*/
     if(current_game_process == RIVER_MSG){
-        static int i = 1;
-        i++;
+
         my_raise = 0;
         //这种情况下，就一种判别，跟上！
         if(stg->STYLE_7Cards >= FULL_HOUSE){
@@ -244,14 +262,14 @@ player_action Player::get_my_action()
         }
 
         if(my_raise > 0){
-            cout << "-----------"<< i << "-----------" << endl;
-            cout << "action raise" << my_raise << endl;
             return raise;
 
         }
         myAction = check;
     }
 
+    last_game_process = current_game_process;
+    old_need_min_bet = need_min_bet;//记录上次需要压入的赌注
     return myAction;
 }
 
