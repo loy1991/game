@@ -1,6 +1,7 @@
 #include "protocol.h"
 #include "string.h"
 #include "player.h"
+#include "enviroment.h"
 
 #include <sys/types.h>  //socket()
 #include <sys/socket.h> //socket(),bind()
@@ -116,7 +117,7 @@ void Protocol::process_Msg(char *name)
                 }
                 if(strcmp("blind/ ",pline) == 0){
                     stat = BLIND_MSG;
-                    player->inform_game_state(BLIND_MSG);//通知player到达手牌状态
+                    player->inform_game_state(BLIND_MSG);//通知player到达blind状态
                     //cout << "blind-msg" << endl;
                 }
                 if(strcmp("hold/ ",pline) == 0){
@@ -260,7 +261,14 @@ bool Protocol::stop_blind_msg(Player *p, int &index)
 
             count ++;
         }
+        pb->set_player_count(count);
     }
+    //设置了player的my_turn_blind，其实不该在这里设置，但是着急赶活啦
+    int mon;
+    if((mon = pb->get_bet_of_pid(_pid)) > 0){
+        player->set_my_turn_blind(mon);
+    }
+
     return true;
 }
 
@@ -353,7 +361,7 @@ bool Protocol::stop_inquire_msg(Player *p, int &index)
 bool Protocol::ptos_action_msg(Player *p)
 {        
     player_action pl_act = no_player_action;
-    pl_act = p->get_my_action();
+    pl_act = player->get_my_action();
 
     bzero(bufSend, sizeof(bufSend));//清空发送缓存
 

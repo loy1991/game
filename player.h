@@ -16,7 +16,7 @@ class Player
 public:
     Player(const char *SerIp, int SerPt,
            const char* MyIp, int MyPt,
-           int pid, char *name="liuyang");
+           int pid, char *name="liu");
     ~Player();
 
     friend void* protocol(void *arg);
@@ -55,6 +55,8 @@ public:
     //返回玩家准备加的注
     int get_my_raise();
 
+    //设置是否有盲注投入
+    void set_my_turn_blind(int val);
     //获得player的策略实例
     Strategy *get_strategy();
 
@@ -67,11 +69,11 @@ private:
     int my_bet;     //此刻我愿意压进的赌注
     int my_raise;   //raise发送的赌注
 
-
     int old_need_min_bet;  //上一轮最小需要压进的赌注
+    int raise_count;       //最多加几次注的限制
 
-
-    player_action lPAction;   //上家的行动
+//    player_action lPAction;   //上家的行动
+    int my_turn_blind;  //代表该“我”出了盲注，记录盲注金额，无盲注则为-1
 
     Protocol *pro;   //代表协议通信
     Strategy *stg;   //代表策略

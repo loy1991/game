@@ -98,7 +98,7 @@ player_action Player::get_my_action()
 {
     //(1)弃牌 CONF_BEGIN_GAME_FOLD_TIMES 局，避免疯狗，同时
     //期间统计选手的打牌风格，统计疯狗和怕死鬼
-    if(current_match_time < CONF_BEGIN_GAME_FOLD_TIMES){
+    if(current_match_time < CONF_BEGIN_GAME_FOLD_TIMES){        
         return fold;
     }
 
@@ -107,7 +107,6 @@ player_action Player::get_my_action()
 
     /*====================两张牌的情况====================*/
     if(current_game_process == HOLD_CARDS_MSG){
-
 
         //“我”能为这次出牌给出的最大赌注
         int my_loved_bet = 0;
@@ -121,7 +120,13 @@ player_action Player::get_my_action()
         bool o_same_color = stg->get_holdCards().info_same_color;  //同样的颜色
         int  o_big_card_num = stg->get_holdCards().info_big_card_num;//有大牌存在
 
-        //大牌型统计
+        if(my_turn_blind < 0){//说明不是我的盲注期间
+            if((o_big_card_num == 0) && !o_double){//两个小牌
+
+                return fold;
+            }
+        }
+        //牌型统计
         extend = extend + 2 + o_big_card_num;
         if(o_same_color){
             extend += 1;
@@ -140,9 +145,10 @@ player_action Player::get_my_action()
         my_bet = my_loved_bet;
 
         if(need_min_bet > my_bet)
+
             return fold;
         else
-            return check;
+            myAction = check;
     }
     /*====================五张牌的情况====================*/
     if(current_game_process == FLOP_MSG){
@@ -180,22 +186,28 @@ player_action Player::get_my_action()
         }
         cout << "FLOP_MSG.my_loved_bet = " << my_bet << endl;
 
-        int raise_count = 0;
+
+        //如果不是以同一状态第二次进入这个分支，则对其置0
+        if(last_game_process != current_game_process)
+            raise_count = CONF_RAISE_COUNT;
+
         if(stg->STYLE_5Cards > FLUSH){//如果牌型果真很好，则加注
-            raise_count++;
-            if(raise_count < CONF_RAISE_COUNT){//加到CONF_RAISE_COUNT次，
+            raise_count--;
+            if(raise_count > 0){//加到CONF_RAISE_COUNT次，
                 my_raise = 1;
+                last_game_process = current_game_process;
+                old_need_min_bet = need_min_bet;//记录上次需要压入的赌注
                 return raise;
             }
             else{
-                return check;
+                myAction = check;
             }
         }
 
         if(need_min_bet > my_bet)
             return fold;
         else
-            return check;
+            myAction =  check;
     }
     /*====================六张牌的情况====================*/
     if(current_game_process == TURN_MSG){
@@ -222,7 +234,7 @@ player_action Player::get_my_action()
                 if(stg->STYLE_6Cards == STRAIGHT)
                     extend6 += 12;
                 if(stg->STYLE_6Cards > STRAIGHT)
-                    return check;
+                    extend6 += 16;
             }else{//5张到六张有升级，则极好
 
                 if(stg->STYLE_6Cards == TWO_PAIR)
@@ -232,9 +244,16 @@ player_action Player::get_my_action()
                 if(stg->STYLE_6Cards == STRAIGHT)
                     extend6 += 12;
                 if(stg->STYLE_6Cards > STRAIGHT)
-                    return check;
+                    extend6 += 16;
             }
         }
+
+        if(stg->STYLE_6Cards == HIGH_CARD){//如果六张牌还是高牌，则最好弃掉
+            if(old_need_min_bet < need_min_bet){//如果有人加注
+                return fold;
+            }
+        }
+
         //如果游戏状态有过变化,为了避免同一个状态中，my_bet一直累加
         if(current_game_process != last_game_process){
             my_loved_bet6 = my_bet + extend6 * CONF_BIG_BLIND;
@@ -244,10 +263,27 @@ player_action Player::get_my_action()
         if(need_min_bet > my_bet)
             return fold;
         else
-            return check;
+            myAction =  check;
     }
     /*====================七张牌的情况====================*/
     if(current_game_process == RIVER_MSG){
+        int my_loved_bet7 = 0;
+        int extend7 = 0;
+
+        if(stg->STYLE_7Cards == HIGH_CARD){//如果七张牌还是高牌，则最好弃掉;或者跟着别人混到揭牌比大小
+            if(old_need_min_bet < need_min_bet){//如果有人加注
+                return fold;
+            }
+        }
+
+        if(stg->STYLE_6Cards == ONE_PAIR)
+            extend7 += 1;
+        if(stg->STYLE_6Cards == TWO_PAIR)
+            extend7 += 4;
+        if(stg->STYLE_6Cards == THREE_OF_A_KIND)
+            extend7 += 8;
+        if(stg->STYLE_6Cards == STRAIGHT)
+            extend7 += 12;
 
         my_raise = 0;
         //这种情况下，就一种判别，跟上！
@@ -255,17 +291,42 @@ player_action Player::get_my_action()
             my_raise += 100;
         }
         if(stg->STYLE_7Cards >= FOUR_OF_A_KIND){
-            my_raise += 500;
+            my_raise += 100;
         }
         if(stg->STYLE_7Cards >=STRAIGHT_FLUSH){
-            my_raise += 1000;
+            my_raise += 200;
         }
 
-        if(my_raise > 0){
+        //如果不是以同一状态第二次进入这个分支，则对其置0
+        if(last_game_process != current_game_process)
+            raise_count = CONF_RAISE_COUNT;
+
+        if(my_raise > 0 && raise_count > 0){
+            raise_count--;
+            last_game_process = current_game_process;
+            old_need_min_bet = need_min_bet + my_raise;//记录上次需要压入的赌注
             return raise;
-
         }
-        myAction = check;
+        else{
+            last_game_process = current_game_process;
+            old_need_min_bet = need_min_bet;//记录上次需要压入的赌注
+            return check;
+        }
+        //如果游戏状态有过变化,为了避免同一个状态中，my_bet一直累加
+        if(current_game_process != last_game_process){
+            my_loved_bet7 = my_bet + extend7 * CONF_BIG_BLIND;
+            my_bet = my_loved_bet7;
+        }
+
+        if(need_min_bet > my_bet){
+            if(old_need_min_bet < need_min_bet)
+                return fold;
+            else
+                myAction = check;
+        }
+        else{
+            myAction = check;
+        }
     }
 
     last_game_process = current_game_process;
@@ -278,6 +339,11 @@ int Player::get_my_raise()
     return my_raise;
 }
 
+void Player::set_my_turn_blind(int val)
+{
+    my_turn_blind = val;
+}
+
 void* protocol(void *arg)
 {
     Player *p = (Player *)arg;
@@ -287,7 +353,7 @@ void* protocol(void *arg)
 }
 void* strategy(void *arg)
 {
-    Player *p = (Player *)arg;
+    //Player *p = (Player *)arg;
     //p->stg->start_compute();
     return NULL;
 }

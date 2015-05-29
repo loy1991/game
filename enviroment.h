@@ -186,6 +186,7 @@ public:
     void set_action(int index, player_action val){action[index] = val;}
     void set_totl_pot(int val){totl_pot = val;}
     void set_player_count(int val){player_count = val;}
+    int get_bet_of_pid(int id);
 
     /*面向player使用的用于计算如何出牌的接口*/
 

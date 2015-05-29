@@ -83,6 +83,16 @@ int Player_bet::get_index(int id)
     return -1;
 }
 
+int Player_bet::get_bet_of_pid(int id)
+{
+    for(int i = 0; i<player_count; i++){
+        if(pid[i] == id){
+            return bets[i];
+        }
+    }
+    return -1;
+}
+
 int Player_bet::get_now_neet_minbet()
 {
     for(int i = 0; i < player_count; i++){
