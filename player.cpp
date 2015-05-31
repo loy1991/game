@@ -98,7 +98,7 @@ player_action Player::get_my_action()
 {
     //(1)弃牌 CONF_BEGIN_GAME_FOLD_TIMES 局，避免疯狗，同时
     //期间统计选手的打牌风格，统计疯狗和怕死鬼
-    if(current_match_time < CONF_BEGIN_GAME_FOLD_TIMES){        
+    if(current_match_time < CONF_BEGIN_GAME_FOLD_TIMES){
         return fold;
     }
 
@@ -266,11 +266,13 @@ player_action Player::get_my_action()
             return fold;
         else
             myAction =  check;
+        cout << "my_bet" << my_bet << endl;
     }
     /*====================七张牌的情况====================*/
     if(current_game_process == RIVER_MSG){
         int my_loved_bet7 = 0;
         int extend7 = 0;
+        bool excellent_cards = false;   //说明牌是不一般地好
 
         if(stg->STYLE_7Cards == HIGH_CARD){//如果七张牌还是高牌，则最好弃掉;或者跟着别人混到揭牌比大小
             if(old_need_min_bet < need_min_bet){//如果有人加注
@@ -278,38 +280,43 @@ player_action Player::get_my_action()
             }
         }
 
-        if(stg->STYLE_6Cards == ONE_PAIR)
+        if((stg->STYLE_7Cards == ONE_PAIR) && (stg-> STYLE_riverCards < ONE_PAIR))
             extend7 += 1;
-        if(stg->STYLE_6Cards == TWO_PAIR)
+        if((stg->STYLE_7Cards == TWO_PAIR) && (stg-> STYLE_riverCards < TWO_PAIR))
             extend7 += 4;
-        if(stg->STYLE_6Cards == THREE_OF_A_KIND)
+        if((stg->STYLE_7Cards == THREE_OF_A_KIND) && (stg-> STYLE_riverCards < THREE_OF_A_KIND))
             extend7 += 8;
-        if(stg->STYLE_6Cards == STRAIGHT)
+        if((stg->STYLE_7Cards == STRAIGHT) && (stg-> STYLE_riverCards < STRAIGHT))
             extend7 += 12;
 
         my_raise = 0;
+
+
         //这种情况下，就一种判别，跟上！
-        if(stg->STYLE_7Cards >= FULL_HOUSE){
+        if((stg->STYLE_7Cards >= FULL_HOUSE) && (stg-> STYLE_riverCards < FULL_HOUSE)){
             my_raise += 100;
+            excellent_cards = true;
         }
-        if(stg->STYLE_7Cards >= FOUR_OF_A_KIND){
+        if((stg->STYLE_7Cards >= FOUR_OF_A_KIND) && (stg-> STYLE_riverCards < FOUR_OF_A_KIND)){
             my_raise += 100;
+            excellent_cards = true;
         }
-        if(stg->STYLE_7Cards >=STRAIGHT_FLUSH){
+        if((stg->STYLE_7Cards >=STRAIGHT_FLUSH) && (stg-> STYLE_riverCards < STRAIGHT_FLUSH)){
             my_raise += 200;
+            excellent_cards = true;
         }
 
-        //如果不是以同一状态第二次进入这个分支，则对其置0
+        //如果不是以同一状态第二次进入这个分支，则对其初始化
         if(last_game_process != current_game_process)
             raise_count = CONF_RAISE_COUNT;
 
-        if(my_raise > 0 && raise_count > 0){
+        if(excellent_cards == true && my_raise > 0 && raise_count > 0){
             raise_count--;
             last_game_process = current_game_process;
             old_need_min_bet = need_min_bet + my_raise;//记录上次需要压入的赌注
             return raise;
         }
-        else{
+        if(excellent_cards == true){
             last_game_process = current_game_process;
             old_need_min_bet = need_min_bet;//记录上次需要压入的赌注
             return check;
@@ -359,5 +366,4 @@ void* strategy(void *arg)
     //p->stg->start_compute();
     return NULL;
 }
-
 

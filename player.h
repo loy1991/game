@@ -16,7 +16,7 @@ class Player
 public:
     Player(const char *SerIp, int SerPt,
            const char* MyIp, int MyPt,
-           int pid, char *name="liu");
+           int pid, char *name="huluwa-culu");
     ~Player();
 
     friend void* protocol(void *arg);
